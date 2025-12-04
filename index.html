@@ -3,526 +3,539 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sufler Konduktora PKP IC (Wzór 2025)</title>
+    <title>Sufler Konduktora 5.0 (FINAL)</title>
     <style>
-        :root {
-            --pkp-orange: #ff6a00;
-            --pkp-blue: #003366;
-            --pkp-grey: #f0f0f0;
-            --text-dark: #333;
-        }
-
+        /* RESET I BAZA */
+        * { box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: sans-serif;
             margin: 0;
             padding: 0;
-            background-color: var(--pkp-grey);
-            color: var(--text-dark);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            padding-bottom: 50px; /* Miejsce na scroll */
         }
 
-        /* --- HEADER & SETTINGS --- */
+        /* NAGŁÓWEK */
         header {
-            background-color: var(--pkp-blue);
+            background-color: #003366; /* PKP Blue */
             color: white;
             padding: 15px;
-            text-align: center;
-            font-weight: bold;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-
-        .settings-panel {
-            background: white;
-            padding: 20px;
-            border-bottom: 2px solid var(--pkp-orange);
-            display: none;
-            overflow-y: auto;
-            max-height: 80vh;
-        }
-
-        .settings-panel.active {
-            display: block;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 0.9em;
-            color: #444;
-            font-weight: 500;
-        }
-
-        select, input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-            box-sizing: border-box;
-            background: #fff;
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 10px;
-            background: #eef;
-            padding: 10px;
-            border-radius: 8px;
-        }
-
-        .checkbox-group input {
-            width: 22px;
-            height: 22px;
-        }
-
-        /* --- MAIN GRID --- */
-        .grid-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            padding: 15px;
-            flex-grow: 1;
-            align-content: start;
-            overflow-y: auto;
-        }
-
-        .btn {
-            background: white;
+        .settings-btn {
+            background: #ff6a00; /* PKP Orange */
             border: none;
-            padding: 25px 10px;
-            border-radius: 16px;
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--pkp-blue);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            cursor: pointer;
-            transition: transform 0.1s, background 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            border: 1px solid #eee;
-        }
-
-        .btn:active {
-            transform: scale(0.96);
-            background: #f8f9fa;
-        }
-
-        .btn.primary {
-            background-color: var(--pkp-blue);
             color: white;
-            grid-column: span 2;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 14px;
         }
 
-        .btn.alert {
-            background-color: #d32f2f;
-            color: white;
-        }
-
-        .btn i {
-            font-size: 28px;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        /* --- OUTPUT MODAL --- */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-header {
-            background: var(--pkp-grey);
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* KONTENERY */
+        .container { padding: 10px; }
+        
+        .section-header {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #606770;
+            font-weight: bold;
+            margin: 15px 0 5px 5px;
             border-bottom: 1px solid #ccc;
         }
 
-        .modal-content {
-            padding: 25px;
+        /* PRZYCISKI GŁÓWNE */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        .btn {
+            background: white;
+            border: 1px solid #ddd;
+            border-left: 5px solid #003366;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            font-size: 16px;
+            font-weight: bold;
+            color: #003366;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .btn:active { background-color: #e4e6eb; transform: scale(0.98); }
+        .btn small { display: block; font-weight: normal; color: #666; font-size: 12px; margin-top: 3px; }
+        .arrow { font-size: 20px; color: #ccc; }
+
+        /* Specjalne kolory dla grup */
+        .btn.delay { border-left-color: #d32f2f; color: #d32f2f; }
+        .btn.other { border-left-color: #555; color: #333; }
+
+        /* PANELE (MODALE) */
+        .fullscreen-panel {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            z-index: 200;
+            display: none; /* Domyślnie ukryte */
+            flex-direction: column;
+        }
+        .fullscreen-panel.active { display: flex; }
+
+        .panel-header {
+            background: #f0f2f5;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .panel-content {
+            padding: 20px;
             overflow-y: auto;
-            flex-grow: 1;
-            font-family: "Times New Roman", Times, serif; /* Wymóg PDF */
-            font-size: 18px; /* Czytelność */
-            line-height: 1.6;
+            flex: 1;
+        }
+
+        /* FORMULARZE */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        input, select {
+            width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;
+        }
+        .checkbox-wrapper {
+            display: flex; align-items: center; gap: 10px; background: #eef; padding: 10px; border-radius: 5px;
+        }
+
+        /* WYNIK (Output) */
+        .output-text {
+            font-family: "Times New Roman", serif;
+            font-size: 18px;
+            line-height: 1.5;
             white-space: pre-wrap;
-            color: #000;
         }
-
-        .en-text {
-            color: #444;
-            font-style: italic;
+        .en-section {
             margin-top: 20px;
-            border-top: 1px solid #ccc;
             padding-top: 20px;
+            border-top: 1px solid #ccc;
+            font-style: italic;
+            color: #444;
         }
 
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 28px;
-            color: var(--pkp-blue);
-            cursor: pointer;
-            padding: 0 10px;
-        }
-
-        .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <header>
     <div>SUFLER PKP IC</div>
-    <div onclick="toggleSettings()" style="cursor: pointer; font-size: 0.9em;">⚙️ USTAWIENIA</div>
+    <button class="settings-btn" onclick="openSettings()">USTAWIENIA</button>
 </header>
 
-<div id="settings" class="settings-panel active">
-    <h3>Dane Pociągu (Wypełnij raz)</h3>
-    
-    <div class="form-group">
-        <label>Kategoria i Numer:</label>
-        <div style="display: flex; gap: 5px;">
-            <select id="trainCategory" style="flex: 1;" onchange="updateInterface()">
+<div class="container">
+
+    <div class="section-header">Komunikaty Podstawowe</div>
+    <div class="grid">
+        <button class="btn" onclick="runPattern(1)">
+            <div>
+                1. POWITALNY – SKRÓCONY STARTOWY
+                <small>W mieście rozpoczęcia biegu</small>
+            </div>
+            <span class="arrow">➤</span>
+        </button>
+
+        <button class="btn" onclick="runPattern(2)">
+            <div>
+                2. POWITALNY – ROZSZERZONY
+                <small>Po wyjeździe z węzła / Pełny</small>
+            </div>
+            <span class="arrow">➤</span>
+        </button>
+
+        <button class="btn" onclick="runPattern(3)">
+            <div>
+                3. POWITALNY – SKRÓCONY
+                <small>Na trasie (po zwykłej stacji)</small>
+            </div>
+            <span class="arrow">➤</span>
+        </button>
+
+        <button class="btn" onclick="runPattern(4)">
+            <div>
+                4. POWITALNO-POŻEGNALNY
+                <small>Skrócony / Tranzytowy / Lotniska</small>
+            </div>
+            <span class="arrow">➤</span>
+        </button>
+
+        <button class="btn" onclick="runPattern(5)">
+            <div>
+                5. POŻEGNALNY
+                <small>Stacja końcowa / Przesiadki</small>
+            </div>
+            <span class="arrow">➤</span>
+        </button>
+    </div>
+
+    <div class="section-header">Opóźnienia i Inne</div>
+    <div class="grid">
+        <button class="btn delay" onclick="openDelayPanel()">
+            <div>
+                ⏱️ ZGŁOŚ OPÓŹNIENIE
+                <small>Wybierz przyczynę z listy</small>
+            </div>
+            <span class="arrow">➤</span>
+        </button>
+        
+        <button class="btn other" onclick="simpleMsg('toalety')">
+            <div>🚽 ZAMKNIĘCIE TOALET</div>
+        </button>
+        
+        <button class="btn other" onclick="simpleMsg('zakaz')">
+            <div>🚭 ZAKAZ PALENIA</div>
+        </button>
+    </div>
+
+</div>
+
+<div id="settingsPanel" class="fullscreen-panel active">
+    <div class="panel-header">
+        <span>KONFIGURACJA POCIĄGU</span>
+        <button onclick="closeSettings()" style="background:none;border:none;font-weight:bold;color:#003366;">ZAPISZ ✕</button>
+    </div>
+    <div class="panel-content">
+        <div class="form-group">
+            <label>Kategoria:</label>
+            <select id="trainCat">
                 <option value="IC">IC</option>
                 <option value="TLK">TLK</option>
                 <option value="EIC">EIC</option>
                 <option value="EIP">EIP (Pendolino)</option>
             </select>
-            <input type="text" id="trainNumber" placeholder="Nr (np. 1234)" style="flex: 1;">
         </div>
+        <div class="form-group">
+            <label>Numer pociągu:</label>
+            <input type="text" id="trainNr" placeholder="np. 13100">
+        </div>
+        <div class="form-group">
+            <label>Nazwa pociągu (opcjonalnie):</label>
+            <input type="text" id="trainName" placeholder="np. MALINOWSKI">
+        </div>
+        <div class="form-group checkbox-wrapper">
+            <input type="checkbox" id="isIntl">
+            <label for="isIntl">Pociąg Międzynarodowy (Język Angielski)</label>
+        </div>
+        <hr>
+        <div class="form-group">
+            <label>Relacja Z:</label>
+            <input type="text" id="stStart" placeholder="Stacja początkowa">
+        </div>
+        <div class="form-group">
+            <label>Relacja DO:</label>
+            <input type="text" id="stEnd" placeholder="Stacja końcowa">
+        </div>
+        <div class="form-group">
+            <label>Przez (opcjonalnie):</label>
+            <input type="text" id="stVia" placeholder="Ważna stacja pośrednia">
+        </div>
+        <hr>
+        <div class="form-group">
+            <label>Nr wagonu drużyny:</label>
+            <input type="text" id="crewCar" placeholder="np. 14">
+        </div>
+        <div class="form-group">
+            <label>Gastronomia:</label>
+            <select id="gastroType">
+                <option value="WARS">Wagon WARS</option>
+                <option value="VENDING">Automaty</option>
+                <option value="TROLLEY">Wózek</option>
+                <option value="NONE">Brak</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Nr wagonu gastronomicznego:</label>
+            <input type="text" id="gastroCar" placeholder="np. 12">
+        </div>
+        
+        <button onclick="closeSettings()" style="width:100%; padding:15px; background:#003366; color:white; border:none; border-radius:5px; margin-top:20px; font-weight:bold;">ZATWIERDŹ DANE</button>
     </div>
-    
-    <div class="form-group">
-        <label>Nazwa pociągu (opcjonalnie):</label>
-        <input type="text" id="trainName" placeholder="np. MAŁOPOLSKA">
-    </div>
-
-    <div class="checkbox-group form-group">
-        <input type="checkbox" id="isInternational" onchange="updateInterface()">
-        <label for="isInternational">Pociąg Międzynarodowy (EN)</label>
-    </div>
-
-    <div class="form-group">
-        <label>Relacja:</label>
-        <input type="text" id="stationStart" placeholder="Z: Warszawa Wsch." style="margin-bottom: 5px;">
-        <input type="text" id="stationEnd" placeholder="Do: Wrocław Gł." style="margin-bottom: 5px;">
-        <input type="text" id="stationVia" placeholder="Przez: (opcjonalnie)">
-    </div>
-
-    <div class="form-group">
-        <label>Nr wagonu z drużyną (Do komunikatu!):</label>
-        <input type="number" id="conductorCar" placeholder="np. 12">
-    </div>
-    
-    <div class="form-group">
-        <label>Gastronomia:</label>
-        <select id="gastronomyType" onchange="updateGastroFields()">
-            <option value="WARS">Wagon Gastronomiczny (WARS)</option>
-            <option value="VENDING">Automaty (Vending)</option>
-            <option value="TROLLEY">Wózek Mini-bar</option>
-            <option value="NONE">Brak oferty</option>
-        </select>
-    </div>
-
-    <div class="form-group" id="gastroCarDiv">
-        <label>Nr wagonu gastronomicznego/automatów:</label>
-        <input type="text" id="gastroCar" placeholder="np. 10">
-    </div>
-
-    <button class="btn primary" style="width: 100%; grid-column: auto; padding: 15px;" onclick="toggleSettings()">ZAPISZ DANE</button>
 </div>
 
-<div class="grid-container">
-    <button class="btn primary" onclick="generateWelcome()">
-        <i>📢</i> POWITANIE<br><small>(Wzór 2 - Rozszerzony)</small>
-    </button>
-
-    <button class="btn" onclick="generateStation()">
-        <i>🚉</i> NASTĘPNA<br>STACJA
-    </button>
-
-    <button class="btn" onclick="openDelayMenu()">
-        <i>⏱️</i> OPÓŹNIENIE<br><small>(Katalog)</small>
-    </button>
-
-    <button class="btn" onclick="generateFarewell()">
-        <i>👋</i> POŻEGNANIE<br><small>(Wzór 5)</small>
-    </button>
-
-     <button class="btn alert" onclick="generateEmergency()">
-        <i>⚠️</i> AWARIA /<br>POSTÓJ
-    </button>
+<div id="resultPanel" class="fullscreen-panel">
+    <div class="panel-header">
+        <span>TWOJA TREŚĆ:</span>
+        <button onclick="closeResult()" style="font-size:24px; background:none; border:none;">✕</button>
+    </div>
+    <div class="panel-content">
+        <div id="finalText" class="output-text"></div>
+        <button onclick="closeResult()" style="width:100%; padding:15px; background:#ddd; border:none; border-radius:5px; margin-top:20px;">ZAMKNIJ</button>
+    </div>
 </div>
 
-<div id="outputModal" class="modal">
-    <div class="modal-header">
-        <span>KOMUNIKAT 1:1 Z PDF</span>
-        <button class="close-btn" onclick="closeModal()">✕</button>
+<div id="delayPanel" class="fullscreen-panel">
+    <div class="panel-header">
+        <span>WYBIERZ PRZYCZYNĘ</span>
+        <button onclick="closeDelayPanel()" style="font-size:24px; background:none; border:none;">✕</button>
     </div>
-    <div id="outputText" class="modal-content"></div>
+    <div class="panel-content">
+        <label>Przyczyna (wg Załącznika 1):</label>
+        <select id="delayReason" style="margin-bottom:15px;"></select>
+        
+        <label>Ile minut opóźnienia?</label>
+        <input type="number" id="delayMinutes" value="10" style="margin-bottom:20px;">
+        
+        <button onclick="generateDelayMsg()" style="width:100%; padding:15px; background:#d32f2f; color:white; border:none; border-radius:5px; font-weight:bold;">GENERUJ KOMUNIKAT</button>
+    </div>
 </div>
 
 <script>
-    // SŁOWNIKI ZGODNE Z PDF (ZAŁĄCZNIK 1)
-    const delayReasons = {
-        "tabor": "awarią taboru",
-        "drzwi": "naprawą drzwi w składzie",
-        "siec": "awarią sieci trakcyjnej",
-        "pogoda": "trudnymi warunkami atmosferycznymi",
-        "wypadek_czlowiek": "wypadkiem z udziałem człowieka",
-        "wypadek_przejazd": "wypadkiem na przejeździe kolejowym",
-        "sterowanie": "awarią urządzeń sterowania ruchem kolejowym",
-        "skrzyzowanie": "przepuszczaniem innego pociągu",
-        "inne": "przyczynami technicznymi"
+    // --- BAZA DANYCH ---
+    
+    // Lista przyczyn opóźnień
+    const reasons = [
+        {id: "1", txt: "awarią taboru", en: "a rolling stock failure"},
+        {id: "2", txt: "naprawą drzwi", en: "the repairment of the rolling stock"},
+        {id: "5", txt: "wypadkiem", en: "an accident"},
+        {id: "6", txt: "wypadkiem z udziałem człowieka", en: "an accident involving a human being"},
+        {id: "11", txt: "trudnymi warunkami atmosferycznymi", en: "bad weather conditions"},
+        {id: "23", txt: "awarią sieci trakcyjnej", en: "malfunction of overhead wiring"},
+        {id: "29", txt: "awarią sterowania ruchem", en: "malfunction of traffic control"},
+        {id: "20", txt: "skomunikowaniem (oczekiwaniem)", en: "waiting for another train"},
+        {id: "99", txt: "przyczynami technicznymi", en: "technical reasons"}
+    ];
+
+    // Lista lotnisk (klucz to nazwa stacji małymi literami)
+    const airports = {
+        "warszawa centralna": {pl: "Lotniska Chopina", en: "Chopin Airport"},
+        "warszawa wschodnia": {pl: "Lotniska Chopina", en: "Chopin Airport"},
+        "warszawa zachodnia": {pl: "Lotniska Chopina", en: "Chopin Airport"},
+        "warszawa gdańska": {pl: "Lotniska Modlin", en: "Modlin Airport"},
+        "kraków główny": {pl: "Portu Lotniczego Kraków-Balice", en: "Krakow Airport"},
+        "gdansk wrzeszcz": {pl: "Portu Lotniczego Gdańsk", en: "Gdansk Airport"},
+        "gdynia główna": {pl: "Portu Lotniczego Gdańsk", en: "Gdansk Airport"},
+        "katowice": {pl: "Portu Lotniczego Pyrzowice", en: "Katowice Airport"},
+        "wrocław główny": {pl: "Portu Lotniczego Wrocław", en: "Wroclaw Airport"},
+        "szczecin dąbie": {pl: "Portu Lotniczego Goleniów", en: "Szczecin Airport"},
+        "lublin główny": {pl: "Portu Lotniczego Lublin", en: "Lublin Airport"}
     };
 
-    const delayReasonsEn = {
-        "tabor": "a rolling stock failure",
-        "drzwi": "the repairment of the rolling stock",
-        "siec": "the malfunction of the railway overhead wiring",
-        "pogoda": "the bad weather conditions",
-        "wypadek_czlowiek": "an accident involving a human being",
-        "wypadek_przejazd": "an accident on a railway crossing",
-        "sterowanie": "the malfunction of the railway traffic control device",
-        "skrzyzowanie": "allowing another train to pass",
-        "inne": "technical reasons"
-    };
+    // --- LOGIKA UI ---
 
-    // --- FUNKCJE POMOCNICZE ---
-
-    function toggleSettings() {
-        document.getElementById('settings').classList.toggle('active');
+    function openSettings() { document.getElementById('settingsPanel').classList.add('active'); }
+    function closeSettings() { document.getElementById('settingsPanel').classList.remove('active'); }
+    
+    function closeResult() { document.getElementById('resultPanel').classList.remove('active'); }
+    
+    function openDelayPanel() {
+        const sel = document.getElementById('delayReason');
+        sel.innerHTML = "";
+        reasons.forEach(r => {
+            let opt = document.createElement('option');
+            opt.value = r.id;
+            opt.innerText = r.id + ". " + r.txt;
+            sel.appendChild(opt);
+        });
+        document.getElementById('delayPanel').classList.add('active');
     }
+    function closeDelayPanel() { document.getElementById('delayPanel').classList.remove('active'); }
 
-    function updateGastroFields() {
-        const type = document.getElementById('gastronomyType').value;
-        const div = document.getElementById('gastroCarDiv');
-        // Ukryj pole numeru wagonu jeśli wybrano "Brak" lub "Wózek" (chyba że wózek stacjonarny, ale PDF mówi o przemieszczaniu)
-        if (type === 'NONE' || type === 'TROLLEY') {
-            div.style.display = 'none';
-        } else {
-            div.style.display = 'block';
-        }
-    }
+    // --- POBIERANIE DANYCH ---
 
-    function isEnglishRequired() {
-        const cat = document.getElementById('trainCategory').value;
-        const isIntl = document.getElementById('isInternational').checked;
-        return cat === 'EIP' || isIntl;
-    }
-
-    function getData() {
+    function getD() {
         return {
-            cat: document.getElementById('trainCategory').value,
-            catFull: getCatFullName(document.getElementById('trainCategory').value),
-            nr: document.getElementById('trainNumber').value || "...",
-            name: document.getElementById('trainName').value, // może być puste
-            start: document.getElementById('stationStart').value || "...",
-            end: document.getElementById('stationEnd').value || "...",
-            via: document.getElementById('stationVia').value,
-            crewCar: document.getElementById('conductorCar').value || "...",
-            gastroType: document.getElementById('gastronomyType').value,
-            gastroCar: document.getElementById('gastroCar').value || "..."
+            cat: document.getElementById('trainCat').value,
+            nr: document.getElementById('trainNr').value || "XXXX",
+            name: document.getElementById('trainName').value,
+            start: document.getElementById('stStart').value || "...",
+            end: document.getElementById('stEnd').value || "...",
+            via: document.getElementById('stVia').value,
+            crew: document.getElementById('crewCar').value || "..",
+            gastro: document.getElementById('gastroType').value,
+            gastroNr: document.getElementById('gastroCar').value || "..",
+            en: document.getElementById('isIntl').checked || document.getElementById('trainCat').value === 'EIP'
         };
     }
 
-    function getCatFullName(cat) {
-        if(cat === 'EIP') return "Express Intercity Premium";
-        if(cat === 'EIC') return "Express Intercity";
-        if(cat === 'IC') return "Intercity";
+    function getFullCat(c) {
+        if(c==='EIP') return "Express Intercity Premium";
+        if(c==='EIC') return "Express Intercity";
+        if(c==='IC') return "Intercity";
         return "TLK";
     }
 
-    function getTimeOfDay() {
+    function getHello(en) {
         const h = new Date().getHours();
-        if (h < 18) return "Dzień dobry!";
-        return "Dobry wieczór!";
-    }
-    
-    function getTimeOfDayEn() {
-        const h = new Date().getHours();
-        if (h < 12) return "Good morning!";
-        if (h < 18) return "Good afternoon!";
+        if(!en) return h < 18 ? "Dzień dobry!" : "Dobry wieczór!";
+        if(h<12) return "Good morning!";
+        if(h<18) return "Good afternoon!";
         return "Good evening!";
     }
 
-    // --- GENERATORY ZGODNE Z PDF ---
-
-    // WZÓR NR 2 (Powitalny - Rozszerzony) - str. 8
-    function generateWelcome() {
-        const d = getData();
-        let t = `${getTimeOfDay()}\n`;
-        
-        // 1. Powitanie i relacja
-        let namePart = d.name ? ` "${d.name}"` : "";
-        let viaPart = d.via ? `, przez stację ${d.via}` : "";
-        t += `Witamy w pociągu ${d.catFull} numer ${d.nr}${namePart} ze stacji ${d.start} do stacji ${d.end}${viaPart}.\n\n`;
-
-        // 2. Następna stacja
-        // (Wzór 2 ma tu "Następna stacja", ale w praktyce na starcie często mówi się to po ruszeniu. 
-        //  PDF mówi: "za miastem, w którym pociąg rozpoczął bieg". Więc dodajemy:)
-        let nextSt = prompt("Podaj nazwę następnej stacji (lub anuluj, by pominąć):");
-        if(nextSt) t += `Następna stacja: ${nextSt}.\n\n`;
-
-        // 3. Bezpieczeństwo i Drużyna (OBOWIĄZKOWE we Wzorze 2)
-        t += `W trosce o Państwa komfort i bezpieczeństwo, prosimy o zapoznanie się z informacjami zamieszczonymi w wagonach.\n`;
-        t += `Drużyna konduktorska pozostaje do Państwa dyspozycji i służy pomocą w trakcie całej podróży. `;
-        t += `Przedział konduktorski znajduje się w wagonie numer ${d.crewCar}.\n\n`;
-
-        // 4. Gastronomia (Logika ze str. 9)
-        if (d.gastroType === 'WARS') {
-            t += `Zapraszamy do skorzystania z oferty gastronomicznej WARS, w wagonie numer ${d.gastroCar}.\n`;
-        } else if (d.gastroType === 'VENDING') {
-            t += `Zapraszamy do zakupu napojów i przekąsek w automatach, w wagonie/wagonach numer ${d.gastroCar}.\n`;
-        } else if (d.gastroType === 'TROLLEY') {
-            t += `Zapraszamy do zakupu napojów i przekąsek z wózka mini-bar.\n`;
-        } else {
-            // "Jeśli w pociągu oferta gastronomiczna nie jest dostępna..."
-            t += `Informujemy, że w pociągu oferta gastronomiczna nie jest dostępna, za co Państwa przepraszamy.\n`;
+    function checkAir(station) {
+        if(!station) return null;
+        let s = station.toLowerCase().trim();
+        for(let key in airports) {
+            if(s.includes(key)) return airports[key];
         }
+        return null;
+    }
 
-        // 5. Poczęstunek (tylko EIP/EIC często, ale opcja w kodzie)
-        // t += `W trakcie podróży otrzymają Państwo poczęstunek.\n`; // Opcjonalne
+    // --- GENERATORY TREŚCI ---
 
-        // ENGLISH (Wzór 2 - str. 28)
-        if (isEnglishRequired()) {
-            t += `\n\n<div class="en-text">${getTimeOfDayEn()}\n`;
-            
-            let viaPartEn = d.via ? `, via ${d.via}` : "";
-            t += `Welcome on board of our ${d.catFull} ${d.nr}${namePart} train from ${d.start} to ${d.end}${viaPartEn}.\n`;
-            
-            if(nextSt) t += `Next station ${nextSt}.\n`;
-            
-            t += `For your comfort and safety, please read the information provided in the passenger cars.\n`;
-            t += `The on-board train crew remains at your service throughout the journey. `;
-            t += `The train crew's compartment is located in the car number ${d.crewCar}.\n\n`;
+    function runPattern(num) {
+        const d = getD();
+        let txt = "";
 
-            if (d.gastroType === 'WARS') {
-                t += `We would like to invite you to try WARS' gastronomic service in car number ${d.gastroCar}.`;
-            } else if (d.gastroType === 'NONE') {
-                t += `Please be informed that the gastronomic service is not available in the train. We would like to apologize for this inconvenience.`;
-            } else if (d.gastroType === 'TROLLEY') {
-                t += `We would like to invite you to purchase drinks and snacks from the mini-bar cart.`;
+        // WZÓR 1 - STARTOWY
+        if(num === 1) {
+            let next = prompt("Podaj następną stację:");
+            if(!next) return;
+            txt += `Następna stacja: ${next}.\n`;
+            if(confirm("Czy jest opóźnienie >5 min?")) txt += `Przepraszamy za opóźnienie pociągu.\n`;
+            if(d.gastro !== 'NONE') txt += `Zapraszamy do skorzystania z oferty gastronomicznej.`;
+            
+            if(d.en) {
+                txt += `\n\n<div class="en-section">Next station: ${next}.\n`;
+                if(txt.includes("Przepraszamy")) txt += `We apologize for the delay.\n`;
+                txt += `</div>`;
             }
-            t += `</div>`;
         }
 
-        showModal(t);
-    }
+        // WZÓR 2 - ROZSZERZONY (PEŁNY)
+        if(num === 2) {
+            txt += `${getHello(false)}\n`;
+            let n = d.name ? ` "${d.name}"` : "";
+            let v = d.via ? `, przez stację ${d.via}` : "";
+            txt += `Witamy w pociągu ${getFullCat(d.cat)} numer ${d.nr}${n} ze stacji ${d.start} do stacji ${d.end}${v}.\n\n`;
+            
+            let next = prompt("Następna stacja (opcjonalnie - ENTER by pominąć):");
+            if(next) txt += `Następna stacja: ${next}.\n\n`;
 
-    // WZÓR NR 5 (Pożegnalny) - str. 12
-    function generateFarewell() {
-        let text = `Zbliżamy się do stacji / stacji końcowej.\n`; // Użytkownik czyta właściwe
-        
-        // Formułka 1:1 z PDF
-        text += `Osoby wysiadające prosimy o zabranie swoich rzeczy oraz zachowanie ostrożności.\n`;
-        text += `Dziękujemy za podróż z PKP Intercity.`;
+            txt += `W trosce o Państwa komfort i bezpieczeństwo, prosimy o zapoznanie się z informacjami zamieszczonymi w wagonach.\n`;
+            txt += `Drużyna konduktorska pozostaje do Państwa dyspozycji. Przedział konduktorski znajduje się w wagonie numer ${d.crew}.\n\n`;
 
-        // ENGLISH (Wzór 5 - str. 32)
-        if (isEnglishRequired()) {
-            text += `\n\n<div class="en-text">We are approaching the station / terminal station.\n`;
-            text += `Passengers, who are leaving the train, please remember to take your belongings and take caution.\n`;
-            text += `Thank you for choosing PKP Intercity.</div>`;
+            if(d.gastro === 'WARS') txt += `Zapraszamy do skorzystania z oferty WARS w wagonie ${d.gastroNr}.`;
+            else if(d.gastro === 'VENDING') txt += `Zapraszamy do automatów w wagonie ${d.gastroNr}.`;
+            else if(d.gastro === 'NONE') txt += `Informujemy, że oferta gastronomiczna nie jest dostępna.`;
+
+            if(d.en) {
+                txt += `\n\n<div class="en-section">${getHello(true)}\n`;
+                txt += `Welcome on board of our train from ${d.start} to ${d.end}.\n`;
+                if(next) txt += `Next station: ${next}.\n`;
+                txt += `The train crew remains at your service in car number ${d.crew}.\n`;
+                txt += `</div>`;
+            }
         }
-        showModal(text);
-    }
 
-    // NASTĘPNA STACJA (Standard z PDF - str. 10/30)
-    function generateStation() {
-        let st = prompt("Nazwa stacji:");
-        if(!st) return;
-        let t = `Następna stacja: ${st}.`;
-        if(isEnglishRequired()) {
-            t += `\n\n<div class="en-text">Next station: ${st}.</div>`;
+        // WZÓR 3 - SKRÓCONY NA TRASIE
+        if(num === 3) {
+            let next = prompt("Następna stacja:");
+            if(!next) return;
+            txt += `Następna stacja: ${next}.\n`;
+            if(confirm("Czy dodać info o opóźnieniu?")) {
+                txt += `Przepraszamy za opóźnienie. Osoby przesiadające się prosimy o kontakt z drużyną konduktorską.\n`;
+            }
+            if(d.en) {
+                txt += `\n\n<div class="en-section">Next station: ${next}.\n`;
+                if(txt.includes("Przepraszamy")) txt += `We apologize for the delay.\n`;
+                txt += `</div>`;
+            }
         }
-        showModal(t);
-    }
 
-    // OPÓŹNIENIA (Wzór A1 / Fragmenty powitalnego - str. 13/33)
-    function openDelayMenu() {
-        let min = prompt("Ile minut opóźnienia?");
-        if(!min) return;
+        // WZÓR 4 - TRANZYTOWY (LOTNISKA)
+        if(num === 4) {
+            let st = prompt("Zbliżamy się do stacji:");
+            if(!st) return;
+            txt += `Zbliżamy się do stacji ${st}.\n`;
+            
+            let dep = prompt("Godzina odjazdu (opcjonalnie):");
+            if(dep) txt += `Planowy odjazd o godzinie ${dep}.\n`;
 
-        let code = prompt("Kod przyczyny:\n1-Tabor, 2-Drzwi, 3-Sieć, 4-Pogoda, 5-Wypadek(Osoba), 6-Przejazd, 7-Sterowanie, 8-Krzyżowanie, 9-Inne");
-        let reasonKey = "inne";
-        if(code=="1") reasonKey="tabor";
-        if(code=="2") reasonKey="drzwi";
-        if(code=="3") reasonKey="siec";
-        if(code=="4") reasonKey="pogoda";
-        if(code=="5") reasonKey="wypadek_czlowiek";
-        if(code=="6") reasonKey="wypadek_przejazd";
-        if(code=="7") reasonKey="sterowanie";
-        if(code=="8") reasonKey="skrzyzowanie";
+            txt += `Osoby wysiadające prosimy o zabranie rzeczy. Dziękujemy za podróż.\n`;
 
-        // PDF: "Informujemy, że w związku z [przyczyna] pociąg jest opóźniony o ... minuty/minut."
-        // "Przepraszamy za opóźnienie."
-        let t = `Informujemy, że w związku z ${delayReasons[reasonKey]} pociąg jest opóźniony o ${min} minut.\n`;
-        t += `Przepraszamy za opóźnienie.`;
-        
-        // Dodatek o przesiadkach (częsty w PDF przy opóźnieniach)
-        t += `\nOsoby przesiadające się do innych pociągów prosimy o zgłaszanie tego zamiaru drużynie konduktorskiej.`;
+            // Auto-Lotnisko
+            let air = checkAir(st);
+            if(air) {
+                txt += `\nZe stacji ${st} odjeżdżają pociągi w kierunku ${air.pl}.\n`;
+            }
 
-        if (isEnglishRequired()) {
-            t += `\n\n<div class="en-text">We would like to inform you that due to ${delayReasonsEn[reasonKey]} the train is delayed about ${min} minutes.\n`;
-            t += `We would like to apologize for the delay.\n`;
-            t += `Passengers willing to change to connecting trains are asked to report this intention to the train crew.</div>`;
+            if(d.en) {
+                txt += `\n\n<div class="en-section">We are approaching ${st}.\n`;
+                txt += `Please remember to take your belongings.\n`;
+                if(air) txt += `From here depart trains to ${air.en}.\n`;
+                txt += `</div>`;
+            }
         }
-        showModal(t);
-    }
 
-    // AWARIA (Wzór B1 - Nieplanowany postój - str. 15/35)
-    function generateEmergency() {
-        // PDF Sekwencja #1
-        let t = `Informujemy, że nastąpiła nieprzewidziana przerwa w ruchu.\n`;
-        t += `W chwili obecnej ustalamy przyczyny nieplanowego postoju pociągu.\n`;
-        t += `Ze względów bezpieczeństwa, otwieranie drzwi wyjściowych oraz opuszczanie pociągu jest zabronione.`;
+        // WZÓR 5 - POŻEGNALNY
+        if(num === 5) {
+            let st = d.end; 
+            txt += `Zbliżamy się do stacji końcowej ${st}.\n`;
+            txt += `Osoby wysiadające prosimy o zabranie rzeczy. Dziękujemy za podróż z PKP Intercity.\n`;
+            
+            let air = checkAir(st);
+            if(air) txt += `\nMożliwość przesiadki na pociąg do ${air.pl}.`;
 
-        if (isEnglishRequired()) {
-            t += `\n\n<div class="en-text">We would like to inform you about an unscheduled stop.\n`;
-            t += `We are currently determining the causes of the unscheduled stop.\n`;
-            t += `For safety reasons, opening the exit doors and leaving the train is prohibited.</div>`;
+            if(d.en) {
+                txt += `\n\n<div class="en-section">We are approaching the terminal station ${st}.\n`;
+                txt += `Thank you for choosing PKP Intercity.\n`;
+                txt += `</div>`;
+            }
         }
-        showModal(t);
+
+        showText(txt);
     }
 
-    // UI UTILS
-    function showModal(html) {
-        document.getElementById('outputText').innerHTML = html;
-        document.getElementById('outputModal').classList.add('active');
+    // GENERATOR OPÓŹNIEŃ
+    function generateDelayMsg() {
+        const id = document.getElementById('delayReason').value;
+        const min = document.getElementById('delayMinutes').value;
+        const r = reasons.find(x => x.id === id);
+        const d = getD();
+
+        let txt = `Informujemy, że w związku z ${r.txt} pociąg jest opóźniony o ${min} minut.\n`;
+        txt += `Przepraszamy za opóźnienie.\n`;
+        txt += `Osoby przesiadające się prosimy o zgłaszanie tego drużynie konduktorskiej w wagonie ${d.crew}.`;
+
+        if(d.en) {
+            txt += `\n\n<div class="en-section">Due to ${r.en} the train is delayed about ${min} minutes.\n`;
+            txt += `We apologize for the delay. Please report connections to the train crew.</div>`;
+        }
+
+        closeDelayPanel();
+        showText(txt);
     }
-    function closeModal() {
-        document.getElementById('outputModal').classList.remove('active');
+
+    // INNE PROSTE
+    function simpleMsg(type) {
+        let txt = "";
+        const d = getD();
+        if(type === 'toalety') {
+            txt = "Informujemy, że na najbliższym odcinku toalety będą zamknięte. Przepraszamy.";
+            if(d.en) txt += `\n\n<div class="en-section">Toilets will be closed on this section. Sorry for inconvenience.</div>`;
+        }
+        if(type === 'zakaz') {
+            txt = "Przypominamy o całkowitym zakazie palenia i spożywania alkoholu w pociągu.";
+            if(d.en) txt += `\n\n<div class="en-section">Smoking and drinking alcohol is strictly prohibited.</div>`;
+        }
+        showText(txt);
     }
-    
-    // Inicjalizacja formularza
-    updateGastroFields();
+
+    function showText(t) {
+        document.getElementById('finalText').innerHTML = t;
+        document.getElementById('resultPanel').classList.add('active');
+    }
+
 </script>
-
 </body>
 </html>
