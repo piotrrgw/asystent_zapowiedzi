@@ -3,334 +3,529 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Generator Komunikatów PKP IC</title>
+    <title>Generator Komunikatów PKP IC (Auto-Fill v5)</title>
     <style>
         :root {
             --pkp-blue: #004d96;
             --pkp-orange: #f39200;
             --bg-color: #f4f4f9;
-            --text-color: #333;
+            --text-color: #222;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        h1 { font-size: 1.5rem; color: var(--pkp-blue); text-align: center; margin-bottom: 20px; }
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 650px;
             background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 15px;
+            border-top: 5px solid var(--pkp-blue);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        label { display: block; margin-top: 15px; font-weight: 600; font-size: 0.9rem; }
+        h1 { font-size: 1.2rem; color: var(--pkp-blue); margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        h3 { font-size: 0.9rem; background: #eee; padding: 5px; margin-top: 15px; margin-bottom: 5px; }
+        
+        label { display: block; margin-top: 8px; font-weight: bold; font-size: 0.8rem; }
         input, select {
             width: 100%;
-            padding: 12px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 1rem;
+            padding: 8px;
+            margin-top: 2px;
+            border: 1px solid #aaa;
+            font-size: 0.9rem;
             box-sizing: border-box;
         }
-        .btn-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+        
+        /* Styl dla sekcji wyszukiwania */
+        .search-box {
+            background: #e3f2fd;
+            padding: 10px;
+            border: 1px solid #90caf9;
+            border-radius: 4px;
+            display: flex;
             gap: 10px;
-            margin-top: 20px;
+            align-items: flex-end;
         }
-        button {
-            padding: 15px;
+        .search-box input { margin-top: 0; }
+        .search-btn {
+            background: var(--pkp-blue);
+            color: white;
+            border: none;
+            padding: 9px 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .row { display: flex; gap: 10px; }
+        .col { flex: 1; }
+
+        .btn-action {
+            width: 100%;
+            padding: 12px;
             background-color: var(--pkp-blue);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 1rem;
+            font-weight: bold;
+            margin-top: 15px;
             cursor: pointer;
-            transition: background 0.2s;
         }
-        button:active { background-color: #003366; }
-        button.secondary { background-color: #6c757d; }
-        
-        .output-section { margin-top: 30px; border-top: 2px solid #eee; padding-top: 20px; }
+        .btn-secondary { background-color: #666; margin-top: 0; font-size: 0.8rem; padding: 5px; width: auto; float: right;}
+
         .output-box {
-            background: #eef2f5;
-            padding: 15px;
-            border-left: 5px solid var(--pkp-orange);
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
             margin-bottom: 15px;
             white-space: pre-wrap;
+            font-family: "Courier New", monospace;
+            font-size: 0.85rem;
         }
-        .lang-label { font-size: 0.8rem; text-transform: uppercase; color: #888; margin-bottom: 5px; display: block; }
+        .lang-title { font-size: 0.7rem; color: #888; font-weight: bold; letter-spacing: 1px; }
         .hidden { display: none; }
-        .toast {
-            background: #d4edda;
-            color: #155724;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 0.9rem;
-            display: none;
-        }
+        .alert { color: red; font-size: 0.8rem; margin-top: 5px; }
+        .success-msg { color: green; font-size: 0.8rem; margin-top: 5px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Asystent Kierownika Pociągu</h1>
+<div class="container">
+    <h1>System Komunikatów (Auto-Fill v5.0)</h1>
+
+    <div id="step1">
+        <h3>I. WYSZUKIWANIE W ROZKŁADZIE</h3>
+        <div class="search-box">
+            <div style="flex: 1;">
+                <label style="margin-top:0;">Podaj Numer Pociągu:</label>
+                <input type="text" id="searchInput" placeholder="np. 1300, 13100, 3512...">
+            </div>
+            <button class="search-btn" onclick="searchTrain()">SZUKAJ</button>
+        </div>
+        <div id="searchResult" class="success-msg"></div>
+
+        <h3>II. DANE POCIĄGU (Edytowalne)</h3>
+        <div class="row">
+            <div class="col">
+                <label>Kategoria:</label>
+                <select id="cat">
+                    <option value="Express Intercity Premium">EIP</option>
+                    <option value="Express Intercity">EIC</option>
+                    <option value="Intercity">IC</option>
+                    <option value="TLK">TLK</option>
+                </select>
+            </div>
+            <div class="col">
+                <label>Numer Handlowy:</label>
+                <input type="text" id="num" placeholder="np. 1305">
+            </div>
+        </div>
         
-        <div id="loadMsg" class="toast">♻️ Wczytano ostatnie dane pociągu</div>
+        <label>Nazwa pociągu:</label>
+        <input type="text" id="name" placeholder="np. MAŁOPOLSKA">
 
-        <div id="setupStep">
-            <label>Kategoria Pociągu:</label>
-            <select id="trainCategory">
-                <option value="EIP">Express Intercity Premium (EIP)</option>
-                <option value="EIC">Express Intercity (EIC)</option>
-                <option value="IC">Intercity (IC)</option>
-                <option value="TLK">TLK</option>
-            </select>
+        <div style="background: #eef; padding: 5px; border: 1px solid #ccf; margin-top: 5px;">
+            <label style="color: var(--pkp-blue);">NR WAGONU SŁUŻBOWEGO:</label>
+            <input type="text" id="carService" placeholder="np. 12">
+        </div>
 
-            <label>Numer pociągu (handlowy):</label>
-            <input type="text" id="trainNumber" placeholder="np. 1305">
+        <div class="row">
+            <div class="col">
+                <label>Start:</label>
+                <input type="text" id="from" placeholder="np. Gdynia Główna">
+            </div>
+            <div class="col">
+                <label>Cel:</label>
+                <input type="text" id="to" placeholder="np. Kraków Główny">
+            </div>
+        </div>
+        <label>Przez (trasa):</label>
+        <input type="text" id="via" placeholder="np. Warszawa Centralna">
 
-            <label>Stacja Docelowa:</label>
-            <input type="text" id="destination" placeholder="np. Kraków Główny">
-
-            <label>Przez (opcjonalnie):</label>
-            <input type="text" id="viaStations" placeholder="np. Warszawę Centralną">
-
-            <label>Gastronomia:</label>
-            <select id="gastronomyType">
-                <option value="wars">Wagon Restauracyjny (WARS)</option>
-                <option value="vending">Tylko Automaty</option>
-                <option value="wars_vending">WARS + Automaty</option>
-                <option value="minibar">Wózek Mini-bar</option>
-                <option value="none">Brak oferty (awaryjnie)</option>
-            </select>
-            <input type="text" id="gastroCar" placeholder="Nr wagonu gastronomicznego (np. 14)" style="display:block;">
-
-            <div class="btn-group">
-                <button onclick="saveSetup()" style="grid-column: span 2;">Zatwierdź i Zapamiętaj</button>
+        <h3>III. GASTRONOMIA</h3>
+        <select id="gastroType">
+            <option value="wars">WARS (Wagon restauracyjny)</option>
+            <option value="wars_vending">WARS + Automaty</option>
+            <option value="vending">Tylko Automaty</option>
+            <option value="minibar">Wózek Mini-bar</option>
+            <option value="none_exception">Brak (Awaria/Wyjątkowo)</option>
+            <option value="none">Brak (Planowy)</option>
+        </select>
+        
+        <div class="row">
+            <div class="col">
+                <label>Nr wagonu GASTRO:</label>
+                <input type="text" id="carGastro" placeholder="np. 7">
+            </div>
+            <div class="col">
+                <label>Nr wagonu AUTOMATY:</label>
+                <input type="text" id="carVending" placeholder="np. 6, 7">
             </div>
         </div>
 
-        <div id="generatorStep" class="hidden">
-            <div style="text-align: right; margin-bottom: 10px;">
-                <button class="secondary" onclick="editSetup()" style="padding: 5px 10px; font-size: 0.8rem;">Edytuj Dane</button>
-            </div>
-
-            <label>Wybierz sytuację:</label>
-            <select id="scenario" onchange="toggleScenarioFields()">
-                <option value="welcome_start">Powitanie (Startowe - w mieście startu)</option>
-                <option value="welcome_route">Powitanie (Na trasie - za stacją)</option>
-                <option value="approaching">Zbliżanie się do stacji</option>
-                <option value="goodbye">Pożegnanie (Stacja końcowa)</option>
-            </select>
-
-            <div id="stationInputSection">
-                <label id="stationLabel">Aktualna/Poprzednia Stacja:</label>
-                <input type="text" id="currentStation" placeholder="Wpisz nazwę stacji..." oninput="checkAirport()">
-                <small id="airportHint" style="color: var(--pkp-orange); font-weight: bold;"></small>
-            </div>
-
-            <div class="btn-group">
-                <button onclick="generateAnnouncement()" style="grid-column: span 2;">Generuj Komunikat</button>
-            </div>
-
-            <div class="output-section">
-                <span class="lang-label">Polski 🇵🇱</span>
-                <div class="output-box" id="outputPL">...</div>
-                
-                <span class="lang-label">English 🇬🇧</span>
-                <div class="output-box" id="outputEN">...</div>
-            </div>
-        </div>
+        <button class="btn-action" onclick="goToStep2()">ZATWIERDŹ DANE</button>
     </div>
 
+    <div id="step2" class="hidden">
+        <button class="btn-secondary" onclick="goToStep1()">EDYTUJ DANE</button>
+        <div style="clear:both;"></div>
+
+        <h3>IV. WYBIERZ SYTUACJĘ</h3>
+        <select id="scenario" onchange="uiRefresh()">
+            <option value="1">1. POWITALNY - SKRÓCONY STARTOWY</option>
+            <option value="2">2. POWITALNY - ROZSZERZONY (Wojewódzkie)</option>
+            <option value="3">3. POWITALNY - SKRÓCONY</option>
+            <option value="4">4. POWITALNO-POŻEGNALNY (Tranzytowy)</option>
+            <option value="5">5. POŻEGNALNY</option>
+            <option value="delay_only">TYLKO OPÓŹNIENIE (A1)</option>
+        </select>
+
+        <div id="stationSection">
+            <label id="lblStation">Stacja:</label>
+            <input type="text" id="currentStation" placeholder="Nazwa stacji..." onkeyup="checkAirport()">
+            <div id="airportInfo" class="alert"></div>
+        </div>
+
+        <div style="background: #fff3cd; padding: 10px; margin-top: 10px; border: 1px solid #e0c070;">
+            <label>Opóźnienie (min):</label>
+            <input type="number" id="delayMin" placeholder="0" oninput="uiRefresh()">
+            
+            <div id="reasonDiv" class="hidden">
+                <label>Przyczyna:</label>
+                <select id="delayReason">
+                    <option value="awaria">Awaria taboru</option>
+                    <option value="siec">Awaria sieci trakcyjnej</option>
+                    <option value="srk">Awaria sterowania ruchem</option>
+                    <option value="wypadek">Wypadek z osobą</option>
+                    <option value="pogoda">Warunki atmosferyczne</option>
+                    <option value="krzyzowanie">Krzyżowanie</option>
+                    <option value="skomunikowanie">Skomunikowanie</option>
+                    <option value="policja">Policja</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="btn-action" onclick="generate()">GENERUJ KOMUNIKAT</button>
+
+        <br><br>
+        <span class="lang-title">POLSKI</span>
+        <div class="output-box" id="outPL"></div>
+
+        <span class="lang-title">ENGLISH</span>
+        <div class="output-box" id="outEN"></div>
+    </div>
+</div>
+
 <script>
-    // --- BAZA WIEDZY ---
+// --- BAZA DANYCH POCIĄGÓW (Przykłady - tu należy wkleić dane z CSV/JSON) ---
+/*
+  Struktura:
+  id: główny numer handlowy (np. 1300)
+  variants: lista numerów, które pasują (w tym drogowe, np. 13100, oraz parzyste/nieparzyste)
+  cat: kategoria (EIP, IC, TLK)
+  name: nazwa pociągu
+  from: stacja początkowa
+  to: stacja końcowa
+  via: przez (opcjonalnie)
+*/
+const trainDatabase = [
+    {
+        id: "1300",
+        variants: ["1300", "1301", "1302", "1303", "13100", "13101"], 
+        cat: "EIP",
+        name: "",
+        from: "Warszawa Wschodnia",
+        to: "Kraków Główny",
+        via: "Warszawę Centralną",
+        gastro: "wars"
+    },
+    {
+        id: "3512",
+        variants: ["3512", "3513", "35100", "35102"],
+        cat: "IC",
+        name: "MAŁOPOLSKA",
+        from: "Kraków Główny",
+        to: "Gdynia Główna",
+        via: "Warszawę Centralną",
+        gastro: "wars_vending"
+    },
+    {
+        id: "45",
+        variants: ["45", "46", "44", "47"],
+        cat: "EIC",
+        name: "BWE (Berlin-Warszawa-Express)",
+        from: "Berlin Hbf",
+        to: "Warszawa Wschodnia",
+        via: "Poznań Główny",
+        gastro: "wars"
+    },
+    {
+        id: "18100",
+        variants: ["18100", "18101", "81100", "81101", "1800", "8100"],
+        cat: "TLK",
+        name: "UZNAM",
+        from: "Świnoujście",
+        to: "Warszawa Wschodnia",
+        via: "Szczecin Główny",
+        gastro: "none"
+    },
+    {
+        id: "5320",
+        variants: ["5320", "5321", "53100"],
+        cat: "IC",
+        name: "PIAST",
+        from: "Gdynia Główna",
+        to: "Kraków Główny",
+        via: "Wrocław Główny",
+        gastro: "wars"
+    }
+];
+
+// --- LOGIKA WYSZUKIWANIA (SMART MATCH) ---
+function searchTrain() {
+    let input = document.getElementById('searchInput').value.trim();
+    if (!input) return;
+
+    // Normalizacja: usuwamy ewentualne litery, zostawiamy cyfry
+    input = input.replace(/\D/g, ''); 
     
-    // Lista miast wojewódzkich + Trójmiasto [Źródło: str. 4, pkt 58]
-    const voivodeshipCities = [
-        "Białystok", "Bydgoszcz", "Gdańsk", "Gorzów Wielkopolski", 
-        "Katowice", "Kielce", "Kraków", "Lublin", "Łódź", "Olsztyn", 
-        "Opole", "Poznań", "Rzeszów", "Szczecin", "Toruń", 
-        "Warszawa", "Wrocław", "Zielona Góra", 
-        "Gdynia", "Sopot" 
-    ];
+    // Próba znalezienia pociągu
+    let found = null;
 
-    const airportConnections = {
-        "Lublin Główny": { pl: "Portu Lotniczego Lublin", en: "Lublin AIRPORT" },
-        "Świdnik Miasto": { pl: "Portu Lotniczego Lublin", en: "Lublin AIRPORT" },
-        "Warszawa Wschodnia": { pl: "Lotniska Chopina w Warszawie i Portu Lotniczego Warszawa-Modlin", en: "Warszawa Lotnisko Chopina and Warszawa Modlin airports" },
-        "Warszawa Zachodnia": { pl: "Lotniska Chopina w Warszawie i Portu Lotniczego Warszawa-Modlin", en: "Warszawa Lotnisko Chopina and Warszawa Modlin airports" },
-        "Warszawa Centralna": { pl: "Lotniska Chopina w Warszawie i Portu Lotniczego Warszawa-Modlin", en: "Warszawa Lotnisko Chopina and Warszawa Modlin airports" },
-        "Warszawa Gdańska": { pl: "Portu Lotniczego Warszawa-Modlin", en: "Modlin Airport" },
-        "Katowice": { pl: "Portu Lotniczego Katowice-Pyrzowice", en: "Pyrzowice Lotnisko" },
-        "Kraków Główny": { pl: "Portu Lotniczego Kraków-Balice", en: "Kraków Lotnisko" },
-        "Rzeszów Główny": { pl: "Portu Lotniczego Rzeszów-Jasionka", en: "Jasionka Lotnisko" },
-        "Gdańsk Wrzeszcz": { pl: "Portu Lotniczego Gdańsk", en: "Gdańsk Port Lotniczy" },
-        "Gdynia Główna": { pl: "Portu Lotniczego Gdańsk", en: "Gdańsk Port Lotniczy" },
-        "Olsztyn Główny": { pl: "Portu Lotniczego Olsztyn-Mazury", en: "Szymany Lotnisko" },
-        "Szczecin Dąbie": { pl: "Portu Lotniczego Szczecin Goleniów", en: "Port Lotniczy Szczecin Goleniów" }
+    // 1. Szukanie dokładne w wariantach
+    found = trainDatabase.find(t => t.variants.includes(input));
+
+    // 2. Jeśli nie znaleziono, obsługa zasady "zmiana ostatniej cyfry 0-1, 2-3"
+    if (!found) {
+        let num = parseInt(input);
+        let altNum;
+        if (num % 2 === 0) altNum = num + 1; // Jeśli parzysty, sprawdź +1
+        else altNum = num - 1;               // Jeśli nieparzysty, sprawdź -1
+        
+        found = trainDatabase.find(t => t.variants.includes(altNum.toString()));
+    }
+
+    // Wypełnianie formularza
+    const msg = document.getElementById('searchResult');
+    if (found) {
+        document.getElementById('cat').value = mapCategory(found.cat);
+        document.getElementById('num').value = found.id; // Zawsze wstawiamy handlowy (główny ID)
+        document.getElementById('name').value = found.name;
+        document.getElementById('from').value = found.from;
+        document.getElementById('to').value = found.to;
+        document.getElementById('via').value = found.via;
+        document.getElementById('gastroType').value = found.gastro || 'wars';
+        
+        msg.innerText = `✅ Znaleziono: ${found.cat} ${found.id} ${found.name}`;
+        msg.style.color = "green";
+    } else {
+        msg.innerText = "❌ Nie znaleziono pociągu w bazie (wersja demo). Wpisz dane ręcznie.";
+        msg.style.color = "red";
+    }
+}
+
+function mapCategory(shortCat) {
+    if(shortCat === 'EIP') return "Express Intercity Premium";
+    if(shortCat === 'EIC') return "Express Intercity";
+    if(shortCat === 'IC') return "Intercity";
+    if(shortCat === 'TLK') return "TLK";
+    return "Intercity";
+}
+
+// --- STANDARDOWY KOD (jak w v4.0) ---
+
+const airports = {
+    "warszawa wschodnia": { pl: "Lotniska Chopina w Warszawie i Portu Lotniczego Warszawa-Modlin", en: "Warszawa Lotnisko Chopina and Warszawa Modlin airports" },
+    "warszawa zachodnia": { pl: "Lotniska Chopina w Warszawie i Portu Lotniczego Warszawa-Modlin", en: "Warszawa Lotnisko Chopina and Warszawa Modlin airports" },
+    "warszawa centralna": { pl: "Lotniska Chopina w Warszawie i Portu Lotniczego Warszawa-Modlin", en: "Warszawa Lotnisko Chopina and Warszawa Modlin airports" },
+    "warszawa gdańska": { pl: "Portu Lotniczego Warszawa-Modlin", en: "Modlin Airport" },
+    "modlin": { pl: "Portu Lotniczego Warszawa-Modlin", en: "Modlin Airport" },
+    "lublin główny": { pl: "Portu Lotniczego Lublin", en: "Lublin AIRPORT" },
+    "kraków główny": { pl: "Portu Lotniczego Kraków-Balice", en: "Kraków Lotnisko" },
+    "gdańsk wrzeszcz": { pl: "Portu Lotniczego Gdańsk", en: "Gdańsk Port Lotniczy" },
+    "gdynia główna": { pl: "Portu Lotniczego Gdańsk", en: "Gdańsk Port Lotniczy" },
+    "szczecin dąbie": { pl: "Portu Lotniczego Szczecin Goleniów", en: "Port Lotniczy Szczecin Goleniów" },
+    "katowice": { pl: "Portu Lotniczego Katowice-Pyrzowice", en: "Pyrzowice Lotnisko" },
+    "rzeszów główny": { pl: "Portu Lotniczego Rzeszów-Jasionka", en: "Jasionka Lotnisko" },
+    "olsztyn główny": { pl: "Portu Lotniczego Olsztyn-Mazury", en: "Szymany Lotnisko" }
+};
+
+const delayCauses = {
+    "awaria": { pl: "awarią taboru", en: "a rolling stock failure" },
+    "siec": { pl: "awarią sieci trakcyjnej", en: "the malfunction of the railway overhead wiring" },
+    "srk": { pl: "awarią urządzeń sterowania ruchem kolejowym", en: "the malfunction of the railway traffic control device" },
+    "wypadek": { pl: "wypadkiem z udziałem człowieka", en: "an accident involving a human being" },
+    "pogoda": { pl: "trudnymi warunkami atmosferycznymi", en: "the bad weather conditions" },
+    "krzyzowanie": { pl: "przepuszczaniem innego pociągu", en: "allowing another train to pass" },
+    "skomunikowanie": { pl: "oczekiwaniem na podróżnych z innego pociągu", en: "the awaiting for passengers from another train" },
+    "policja": { pl: "interwencją służb porządkowych", en: "an intervention by law enforcement authorities" }
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+    const data = JSON.parse(localStorage.getItem('ic_data_v5'));
+    if(data) {
+        document.getElementById('cat').value = data.cat;
+        document.getElementById('num').value = data.num;
+        document.getElementById('name').value = data.name;
+        document.getElementById('carService').value = data.carService || '';
+        document.getElementById('from').value = data.from;
+        document.getElementById('to').value = data.to;
+        document.getElementById('via').value = data.via;
+        document.getElementById('gastroType').value = data.gastroType;
+        document.getElementById('carGastro').value = data.carGastro;
+        document.getElementById('carVending').value = data.carVending;
+    }
+});
+
+function goToStep2() {
+    const data = {
+        cat: document.getElementById('cat').value,
+        num: document.getElementById('num').value,
+        name: document.getElementById('name').value,
+        carService: document.getElementById('carService').value,
+        from: document.getElementById('from').value,
+        to: document.getElementById('to').value,
+        via: document.getElementById('via').value,
+        gastroType: document.getElementById('gastroType').value,
+        carGastro: document.getElementById('carGastro').value,
+        carVending: document.getElementById('carVending').value
     };
+    localStorage.setItem('ic_data_v5', JSON.stringify(data));
+    document.getElementById('step1').classList.add('hidden');
+    document.getElementById('step2').classList.remove('hidden');
+    uiRefresh();
+}
 
-    let trainData = {};
+function goToStep1() {
+    document.getElementById('step2').classList.add('hidden');
+    document.getElementById('step1').classList.remove('hidden');
+}
 
-    // --- LOGIKA APLIKACJI ---
+function uiRefresh() {
+    const sc = document.getElementById('scenario').value;
+    const delay = document.getElementById('delayMin').value;
+    const stSec = document.getElementById('stationSection');
+    const lbl = document.getElementById('lblStation');
+    
+    if (sc === 'delay_only') {
+        stSec.classList.add('hidden');
+    } else {
+        stSec.classList.remove('hidden');
+        if (['1','2','3'].includes(sc)) lbl.innerText = "Następna stacja:";
+        else lbl.innerText = "Zbliżamy się do stacji:";
+    }
 
-    window.addEventListener('DOMContentLoaded', () => {
-        const savedData = localStorage.getItem('pkp_train_data');
-        if (savedData) {
-            trainData = JSON.parse(savedData);
-            document.getElementById('trainCategory').value = trainData.category || 'IC';
-            document.getElementById('trainNumber').value = trainData.number || '';
-            document.getElementById('destination').value = trainData.destination || '';
-            document.getElementById('viaStations').value = trainData.via || '';
-            document.getElementById('gastronomyType').value = trainData.gastroType || 'wars';
-            document.getElementById('gastroCar').value = trainData.gastroCar || '';
+    if (delay >= 5) document.getElementById('reasonDiv').classList.remove('hidden');
+    else document.getElementById('reasonDiv').classList.add('hidden');
+}
 
-            const msg = document.getElementById('loadMsg');
-            msg.style.display = 'block';
-            setTimeout(() => { msg.style.display = 'none'; }, 3000);
+function checkAirport() {
+    const st = document.getElementById('currentStation').value.toLowerCase();
+    const info = document.getElementById('airportInfo');
+    info.innerText = airports[st] ? "⚠️ WYKRYTO LOTNISKO!" : "";
+}
+
+function generate() {
+    const d = JSON.parse(localStorage.getItem('ic_data_v5'));
+    const sc = document.getElementById('scenario').value;
+    const st = document.getElementById('currentStation').value;
+    const delay = parseInt(document.getElementById('delayMin').value) || 0;
+    const reasonKey = document.getElementById('delayReason').value;
+    
+    let pl = "";
+    let en = "";
+
+    const nameStrPL = d.name ? ` ${d.name}` : ""; 
+    const viaPL = d.via ? `, przez stację ${d.via}` : "";
+    const viaEN = d.via ? `, via ${d.via}` : "";
+    const carService = d.carService ? d.carService : ".....";
+
+    if (sc === '1') {
+        pl += `Następna stacja: ${st}.`;
+        en += `Next station: ${st}.`;
+        if (d.gastroType !== 'none' && d.gastroType !== 'none_exception') {
+            pl += `\nZapraszamy do skorzystania z oferty gastronomicznej.`;
+            en += `\nWe would like to invite you to try the gastronomic service.`;
         }
-        toggleScenarioFields();
-    });
-
-    function saveSetup() {
-        trainData = {
-            category: document.getElementById('trainCategory').value,
-            number: document.getElementById('trainNumber').value,
-            destination: document.getElementById('destination').value,
-            via: document.getElementById('viaStations').value,
-            gastroType: document.getElementById('gastronomyType').value,
-            gastroCar: document.getElementById('gastroCar').value
-        };
-        localStorage.setItem('pkp_train_data', JSON.stringify(trainData));
-        document.getElementById('setupStep').classList.add('hidden');
-        document.getElementById('generatorStep').classList.remove('hidden');
-        toggleScenarioFields();
     }
+    
+    else if (sc === '2') {
+        pl += `Dzień dobry! / Dobry wieczór!\n`;
+        pl += `Witamy w pociągu ${d.cat} numer ${d.num}${nameStrPL} ze stacji ${d.from} do stacji ${d.to}${viaPL}.\n`;
+        pl += `Następna stacja: ${st}.`;
 
-    function editSetup() {
-        document.getElementById('setupStep').classList.remove('hidden');
-        document.getElementById('generatorStep').classList.add('hidden');
-    }
-
-    function toggleScenarioFields() {
-        const scenario = document.getElementById('scenario').value;
-        const stationDiv = document.getElementById('stationInputSection');
-        const label = document.getElementById('stationLabel');
-
-        // Pokaż pole stacji, bo jest potrzebne do określenia typu powitania
-        stationDiv.classList.remove('hidden');
-
-        if (scenario === 'welcome_route') {
-            label.innerText = "Minęliśmy stację (wpisz nazwę):";
-        } else if (scenario === 'welcome_start') {
-            label.innerText = "Jesteśmy po ruszeniu ze stacji:";
-        } else {
-            label.innerText = "Zbliżamy się do stacji:";
-        }
-    }
-
-    function checkAirport() {
-        const station = document.getElementById('currentStation').value;
-        const match = Object.keys(airportConnections).find(key => key.toLowerCase() === station.toLowerCase());
-        const hint = document.getElementById('airportHint');
+        en += `Good morning! / Good afternoon! / Good evening!\n`;
+        en += `Welcome on board of our ${d.cat} train ${d.num} from ${d.from} station to ${d.to} station${viaEN}.\n`;
+        en += `Next station: ${st}.`;
         
-        if (match) {
-            hint.innerText = "✈️ Wykryto przesiadkę na lotnisko!";
-        } else {
-            hint.innerText = "";
+        if (d.gastroType === 'wars') {
+            pl += `\nZapraszamy do skorzystania z oferty gastronomicznej WARS, w wagonie numer ${d.carGastro}.`;
+            en += `\nWe would like to invite you to try WARS' gastronomic service in car number ${d.carGastro}.`;
+        } else if (d.gastroType === 'vending') {
+            pl += `\nZapraszamy do zakupu napojów i przekąsek w automatach, w wagonie/wagonach numer ${d.carVending}.`;
+            en += `\nWe would like to invite you to purchase drinks and snacks from the vending machines in car/cars number ${d.carVending}.`;
+        } else if (d.gastroType === 'wars_vending') {
+            pl += `\nZapraszamy do skorzystania z oferty gastronomicznej WARS, w wagonie numer ${d.carGastro} oraz do zakupu napojów i przekąsek w automatach...`;
+            en += `\nWe would like to invite you to try WARS' gastronomic service in car number ${d.carGastro} and to purchase drinks...`;
+        } else if (d.gastroType === 'minibar') {
+            pl += `\nZapraszamy do zakupu napojów i przekąsek z wózka mini-bar.`;
+            en += `\nWe would like to invite you to purchase drinks and snacks from the mini-bar cart.`;
         }
-    }
 
-    function getGastroText(lang) {
-        const type = trainData.gastroType;
-        const car = trainData.gastroCar || "...";
+        pl += `\n\nW trosce o Państwa komfort i bezpieczeństwo, prosimy o zapoznanie się z informacjami zamieszczonymi w wagonach. Drużyna konduktorska pozostaje do Państwa dyspozycji i służy pomocą w trakcie całej podróży.`;
+        pl += `\nPrzedział konduktorski znajduje się w wagonie numer ${carService}.`;
         
-        if (lang === 'pl') {
-            switch(type) {
-                case 'wars': return `Zapraszamy do skorzystania z oferty gastronomicznej WARS, w wagonie numer ${car}.`;
-                case 'vending': return `Zapraszamy do zakupu napojów i przekąsek w automatach, w wagonie/wagonach numer ${car}.`;
-                case 'wars_vending': return `Zapraszamy do skorzystania z oferty gastronomicznej WARS, w wagonie numer ${car} oraz do zakupu napojów i przekąsek w automatach.`;
-                case 'minibar': return `Zapraszamy do zakupu napojów i przekąsek z wózka mini-bar.`;
-                case 'none': return `Informujemy, że w pociągu oferta gastronomiczna nie jest dostępna, za co Państwa przepraszamy.`;
-                default: return "";
-            }
-        } else {
-            switch(type) {
-                case 'wars': return `We would like to invite you to try WARS' gastronomic service in car number ${car}.`;
-                case 'vending': return `We would like to invite you to purchase drinks and snacks from the vending machines in car/cars number ${car}.`;
-                case 'wars_vending': return `We would like to invite you to try WARS' gastronomic service in car number ${car} and to purchase drinks and snacks from the vending machines.`;
-                case 'minibar': return `We would like to invite you to purchase drinks and snacks from the mini-bar cart.`;
-                case 'none': return `Please be informed that the gastronomic service is not available in the train. We would like to apologize for this inconvenience.`;
-                default: return "";
-            }
-        }
+        en += `\n\nFor your comfort and safety, please read the information provided in the passenger cars. The on-board train crew remains at your service throughout the journey.`;
+        en += `\nThe train crew's compartment is located in the car number ${carService}.`;
     }
 
-    function generateAnnouncement() {
-        const scenario = document.getElementById('scenario').value;
-        const station = document.getElementById('currentStation').value.trim(); // Nazwa stacji
-        let textPL = "";
-        let textEN = "";
-
-        // --- Logika Powitań (zgodnie z listą miast wojewódzkich) ---
-        if (scenario === 'welcome_route') {
-            // Sprawdzamy, czy stacja, którą minęliśmy, jest wojewódzka
-            // Używamy .includes() aby sprawdzić obecność w tablicy
-            const isVoivodeship = voivodeshipCities.includes(station);
-
-            if (isVoivodeship) {
-                // POWITALNY - ROZSZERZONY (Wzór 2) [Źródło: str. 8, pkt 152]
-                const viaTextPL = trainData.via ? `, przez stację ${trainData.via}` : "";
-                const viaTextEN = trainData.via ? `, via ${trainData.via}` : "";
-                
-                textPL = `[POWITANIE ROZSZERZONE - bo "${station}" to miasto wojewódzkie]\n\nDzień dobry / Dobry wieczór! \nWitamy w pociągu ${trainData.category} numer ${trainData.number} do stacji ${trainData.destination}${viaTextPL}.\n\nNastępna stacja: ...\n\n${getGastroText('pl')}\n\nW trosce o Państwa komfort i bezpieczeństwo, prosimy o zapoznanie się z informacjami zamieszczonymi w wagonach. Drużyna konduktorska pozostaje do Państwa dyspozycji.`;
-                
-                textEN = `Good morning / Good evening! \nWelcome on board of our ${trainData.category} train ${trainData.number} to ${trainData.destination} station${viaTextEN}.\n\nNext station: ...\n\n${getGastroText('en')}\n\nFor your comfort and safety, please read the information provided in the passenger cars. The on-board train crew remains at your service.`;
-            } else {
-                // POWITALNY - SKRÓCONY (Wzór 3) [Źródło: str. 10, pkt 188]
-                textPL = `[POWITANIE SKRÓCONE - bo "${station}" to inna miejscowość]\n\nNastępna stacja: ...\n\n${getGastroText('pl')}`;
-                
-                textEN = `Next station: ...\n\n${getGastroText('en')}`;
-            }
-        }
-        else if (scenario === 'welcome_start') {
-            // [Źródło: Wzór 1, str. 8, 28]
-            textPL = `Następna stacja: ${trainData.destination}. \n\n(Jeśli gastronomia): Zapraszamy do skorzystania z oferty gastronomicznej.`;
-            textEN = `Next station: ${trainData.destination}. \n\nWe would like to invite you to try the gastronomic service.`;
-        }
-        else if (scenario === 'approaching') {
-             textPL = `Zbliżamy się do stacji ${station}.`;
-             textEN = `We are approaching ${station} station.`;
-             
-             const airport = Object.keys(airportConnections).find(key => key.toLowerCase() === station.toLowerCase());
-             if (airport) {
-                 textPL += `\n\nZe stacji ${station} odjeżdżają pociągi w kierunku ${airportConnections[airport].pl}. Prosimy o zwrócenie uwagi na informacje stacyjne.`;
-                 textEN += `\n\nFrom ${station} station depart trains to ${airportConnections[airport].en}. Please be reminded to pay attention to information provided at the station.`;
-             }
-             
-             textPL += `\n\nOsoby wysiadające prosimy o zabranie swoich rzeczy oraz zachowanie ostrożności. Dziękujemy za podróż z PKP Intercity.`;
-             textEN += `\n\nPassengers who are leaving the train, please remember to take your belongings and take caution. Thank you for choosing PKP Intercity.`;
-        }
-        else if (scenario === 'goodbye') {
-             textPL = `Zbliżamy się do stacji końcowej ${station}. Dziękujemy za podróż z PKP Intercity.`;
-             textEN = `We are approaching terminal station ${station}. Thank you for choosing PKP Intercity.`;
-        }
-
-        document.getElementById('outputPL').innerText = textPL;
-        document.getElementById('outputEN').innerText = textEN;
+    else if (sc === '3') {
+        pl += `Następna stacja: ${st}.`;
+        en += `Next station: ${st}.`;
     }
+    else if (sc === '4') {
+        if (d.gastroType !== 'none') {
+            pl += `Zapraszamy do skorzystania z oferty gastronomicznej.\n`;
+            en += `We would like to invite you to try the gastronomic service.\n`;
+        }
+        pl += `Zbliżamy się do stacji ${st}.`;
+        en += `We are approaching ${st} station.`;
+        pl += `\nNa stacji można przesiąść się do pociągów dalekobieżnych, regionalnych lub podmiejskich.`;
+        en += `\nAt the station you can change to long-distance, regional or suburban trains.`;
+    }
+    else if (sc === '5') {
+        pl += `Zbliżamy się do stacji końcowej ${st}.`;
+        en += `We are approaching terminal station ${st}.`;
+    }
+
+    if (delay >= 5) {
+        const r = delayCauses[reasonKey];
+        pl += `\n\nInformujemy, że w związku z ${r.pl} pociąg jest opóźniony o ${delay} minut. Przepraszamy za opóźnienie.`;
+        en += `\n\nWe would like to inform you that due to ${r.en} the train is delayed about ${delay} minutes. We would like to apologize for the delay.`;
+
+        pl += `\nOsoby przesiadające się prosimy o zgłoszenie tego drużynie konduktorskiej. Przedział konduktorski znajduje się w wagonie numer ${carService}.`;
+        en += `\nPassengers willing to change trains are asked to report this intention to the train crew. The train crew's compartment is located in the car number ${carService}.`;
+    }
+
+    if ((sc === '4' || sc === '5') && airports[st.toLowerCase()]) {
+        const air = airports[st.toLowerCase()];
+        pl += `\nZe stacji ${st} odjeżdżają pociągi w kierunku ${air.pl}. Prosimy o zwrócenie uwagi na informacje stacyjne.`;
+        en += `\nFrom ${st} station depart trains to ${air.en}. Please be reminded to pay attention to information provided at the station.`;
+    }
+
+    if (sc === '4' || sc === '5') {
+        pl += `\nOsoby wysiadające prosimy o zabranie swoich rzeczy oraz zachowanie ostrożności. Dziękujemy za podróż z PKP Intercity.`;
+        en += `\nPassengers, who are leaving the train, please remember to take your belongings and take caution. Thank you for choosing PKP Intercity.`;
+    }
+
+    document.getElementById('outPL').innerText = pl;
+    document.getElementById('outEN').innerText = en;
+}
 </script>
+
 </body>
 </html>
