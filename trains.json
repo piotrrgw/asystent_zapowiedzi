@@ -1,0 +1,31 @@
+[
+  {
+    "number": "1600",
+    "name": "Łomża",
+    "category": "EIC",
+    "route": {
+      "from": "Gdynia Główna",
+      "to": "Warszawa Centralna",
+      "via": ["Malbork", "Iława Główna"]
+    },
+    "nextStations": ["Tczew", "Bydgoszcz Główna"],
+    "gastro": {
+      "type": "wars",
+      "info": "7"
+    },
+    "conductorCar": "3"
+  },
+  {
+    "number": "5012",
+    "name": "Sobieski",
+    "category": "EIP",
+    "route": {
+      "from": "Gdynia Główna",
+      "to": "Kraków Główny",
+      "via": ["Gdańsk", "Warszawa Centralna"]
+    },
+    "nextStations": ["Gdańsk Wrzeszcz"],
+    "gastro": {"type": "vending", "info": "8"},
+    "conductorCar": "2"
+  }
+]

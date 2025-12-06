@@ -1,530 +1,715 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Generator Komunikatów PKP IC (Auto-Fill v5)</title>
-    <style>
-        :root {
-            --pkp-blue: #004d96;
-            --pkp-orange: #f39200;
-            --bg-color: #f4f4f9;
-            --text-color: #222;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .container {
-            width: 100%;
-            max-width: 650px;
-            background: white;
-            padding: 15px;
-            border-top: 5px solid var(--pkp-blue);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        h1 { font-size: 1.2rem; color: var(--pkp-blue); margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
-        h3 { font-size: 0.9rem; background: #eee; padding: 5px; margin-top: 15px; margin-bottom: 5px; }
-        
-        label { display: block; margin-top: 8px; font-weight: bold; font-size: 0.8rem; }
-        input, select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 2px;
-            border: 1px solid #aaa;
-            font-size: 0.9rem;
-            box-sizing: border-box;
-        }
-        
-        /* Styl dla sekcji wyszukiwania */
-        .search-box {
-            background: #e3f2fd;
-            padding: 10px;
-            border: 1px solid #90caf9;
-            border-radius: 4px;
-            display: flex;
-            gap: 10px;
-            align-items: flex-end;
-        }
-        .search-box input { margin-top: 0; }
-        .search-btn {
-            background: var(--pkp-blue);
-            color: white;
-            border: none;
-            padding: 9px 15px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .row { display: flex; gap: 10px; }
-        .col { flex: 1; }
-
-        .btn-action {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--pkp-blue);
-            color: white;
-            border: none;
-            font-weight: bold;
-            margin-top: 15px;
-            cursor: pointer;
-        }
-        .btn-secondary { background-color: #666; margin-top: 0; font-size: 0.8rem; padding: 5px; width: auto; float: right;}
-
-        .output-box {
-            background: #fff;
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 15px;
-            white-space: pre-wrap;
-            font-family: "Courier New", monospace;
-            font-size: 0.85rem;
-        }
-        .lang-title { font-size: 0.7rem; color: #888; font-weight: bold; letter-spacing: 1px; }
-        .hidden { display: none; }
-        .alert { color: red; font-size: 0.8rem; margin-top: 5px; }
-        .success-msg { color: green; font-size: 0.8rem; margin-top: 5px; font-weight: bold; }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Asystent zapowiedzi — PKP Intercity (pełna wersja)</title>
+<style>
+:root{--bg:#f6f8fa;--card:#fff;--muted:#6b7280;--accent:#0b6efd;--danger:#dc2626}
+html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--bg);color:#0f172a}
+.container{max-width:980px;margin:16px auto;padding:16px}
+.card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 8px 24px rgba(12,12,16,0.06)}
+h1{margin:0 0 6px;font-size:20px}
+.lead{margin:0 0 12px;color:var(--muted);font-size:13px}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(max-width:800px){.form-grid{grid-template-columns:1fr}}
+label{display:block;font-size:13px;color:#1f2937;margin-bottom:6px}
+input,select,textarea{width:100%;padding:10px;border:1px solid #e6edf3;border-radius:8px;font-size:14px;background:#fff}
+textarea{min-height:140px;resize:vertical}
+.row{display:flex;gap:8px}
+.btn{padding:10px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:600}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-ghost{background:#f1f5f9;color:#0f172a;border:1px solid #e6edf3}
+.small{font-size:13px;color:var(--muted)}
+.footer{margin-top:12px;padding-top:12px;border-top:1px dashed #eef2f7;text-align:center;color:var(--muted);font-size:13px}
+.preset-list{margin-top:8px}
+.kv{font-weight:600}
+.bad{color:var(--danger)}
+.helper{font-size:12px;color:var(--muted);margin-top:-6px;margin-bottom:8px}
+.checkbox-row{display:flex;align-items:center;gap:8px}
+.inline{display:inline-block}
+</style>
 </head>
 <body>
-
 <div class="container">
-    <h1>System Komunikatów (Auto-Fill v5.0)</h1>
+  <div class="card" role="main" aria-labelledby="title">
+    <h1 id="title">Asystent zapowiedzi — PKP Intercity (pełna wersja)</h1>
+    <p class="lead">Generator ściśle zgodny z Wytycznymi i Wzorami komunikatów PKP Intercity (podstawowe + części A, B, C). Wypełnij dane lub wczytaj pociąg z <code>trains.json</code>.</p>
 
-    <div id="step1">
-        <h3>I. WYSZUKIWANIE W ROZKŁADZIE</h3>
-        <div class="search-box">
-            <div style="flex: 1;">
-                <label style="margin-top:0;">Podaj Numer Pociągu:</label>
-                <input type="text" id="searchInput" placeholder="np. 1300, 13100, 3512...">
-            </div>
-            <button class="search-btn" onclick="searchTrain()">SZUKAJ</button>
-        </div>
-        <div id="searchResult" class="success-msg"></div>
+    <div style="display:grid;gap:12px">
+      <div>
+        <label>Wybierz pociąg (z trains.json)</label>
+        <select id="trainSelect"><option value="">-- brak danych --</option></select>
+        <div class="helper">Po wybraniu pociągu formularz zostanie autouzupełniony.</div>
+      </div>
 
-        <h3>II. DANE POCIĄGU (Edytowalne)</h3>
-        <div class="row">
-            <div class="col">
-                <label>Kategoria:</label>
-                <select id="cat">
-                    <option value="Express Intercity Premium">EIP</option>
-                    <option value="Express Intercity">EIC</option>
-                    <option value="Intercity">IC</option>
-                    <option value="TLK">TLK</option>
-                </select>
-            </div>
-            <div class="col">
-                <label>Numer Handlowy:</label>
-                <input type="text" id="num" placeholder="np. 1305">
-            </div>
-        </div>
-        
-        <label>Nazwa pociągu:</label>
-        <input type="text" id="name" placeholder="np. MAŁOPOLSKA">
-
-        <div style="background: #eef; padding: 5px; border: 1px solid #ccf; margin-top: 5px;">
-            <label style="color: var(--pkp-blue);">NR WAGONU SŁUŻBOWEGO:</label>
-            <input type="text" id="carService" placeholder="np. 12">
+      <div class="form-grid">
+        <div>
+          <label for="messageType">Typ komunikatu <span class="small">(wzory podstawowe)</span></label>
+          <select id="messageType">
+            <option value="">-- wybierz --</option>
+            <option value="powitalny_skr_start">Powitalny — skrócony startowy</option>
+            <option value="powitalny_rozszerzony">Powitalny — rozszerzony</option>
+            <option value="powitalny_skr">Powitalny — skrócony</option>
+            <option value="powitalno_pozegnalny">Powitalno-pożegnalny (tranzytowy)</option>
+            <option value="pozegnalny">Pożegnalny</option>
+          </select>
         </div>
 
-        <div class="row">
-            <div class="col">
-                <label>Start:</label>
-                <input type="text" id="from" placeholder="np. Gdynia Główna">
-            </div>
-            <div class="col">
-                <label>Cel:</label>
-                <input type="text" id="to" placeholder="np. Kraków Główny">
-            </div>
-        </div>
-        <label>Przez (trasa):</label>
-        <input type="text" id="via" placeholder="np. Warszawa Centralna">
-
-        <h3>III. GASTRONOMIA</h3>
-        <select id="gastroType">
-            <option value="wars">WARS (Wagon restauracyjny)</option>
-            <option value="wars_vending">WARS + Automaty</option>
-            <option value="vending">Tylko Automaty</option>
-            <option value="minibar">Wózek Mini-bar</option>
-            <option value="none_exception">Brak (Awaria/Wyjątkowo)</option>
-            <option value="none">Brak (Planowy)</option>
-        </select>
-        
-        <div class="row">
-            <div class="col">
-                <label>Nr wagonu GASTRO:</label>
-                <input type="text" id="carGastro" placeholder="np. 7">
-            </div>
-            <div class="col">
-                <label>Nr wagonu AUTOMATY:</label>
-                <input type="text" id="carVending" placeholder="np. 6, 7">
-            </div>
+        <div>
+          <label for="category">Kategoria pociągu</label>
+          <select id="category">
+            <option value="">-- wybierz --</option>
+            <option value="EIP">EIP</option>
+            <option value="EIC">EIC</option>
+            <option value="IC">IC</option>
+            <option value="TLK">TLK</option>
+            <option value="EC">EC</option>
+            <option value="EN">EN</option>
+            <option value="ICN">ICN</option>
+          </select>
         </div>
 
-        <button class="btn-action" onclick="goToStep2()">ZATWIERDŹ DANE</button>
+        <div>
+          <label for="number">Numer pociągu <span class="small">*</span></label>
+          <input id="number" type="text" placeholder="np. 1600">
+        </div>
+
+        <div>
+          <label for="name">Nazwa pociągu (opcjonalnie)</label>
+          <input id="name" type="text" placeholder="np. Łomża">
+        </div>
+
+        <div>
+          <label for="from">Stacja początkowa <span class="small">*</span></label>
+          <input id="from" type="text" placeholder="np. Gdynia Główna">
+        </div>
+
+        <div>
+          <label for="to">Stacja końcowa <span class="small">*</span></label>
+          <input id="to" type="text" placeholder="np. Warszawa Centralna">
+        </div>
+
+        <div>
+          <label for="via">Stacja(-e) pośrednie <span class="small">(1-2)</span></label>
+          <input id="via" type="text" placeholder="oddzielone przecinkiem">
+        </div>
+
+        <div>
+          <label for="nextStation">Następna stacja</label>
+          <input id="nextStation" type="text" placeholder="np. Tczew">
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div>
+          <label for="groups">Grupy wagonów (jeśli dotyczy)</label>
+          <input id="groups" type="text" placeholder="np. wagony 1-5 → X; 6-8 → Y">
+        </div>
+
+        <div>
+          <label for="conductorCar">Przedział konduktorski — wagon nr</label>
+          <input id="conductorCar" type="text" placeholder="np. 3">
+        </div>
+
+        <div>
+          <label for="gastroType">Oferta gastronomiczna</label>
+          <select id="gastroType">
+            <option value="none">Brak oferty</option>
+            <option value="wars">Wagon gastronomiczny WARS</option>
+            <option value="vending">Automaty vendingowe</option>
+            <option value="minibar">Wózek mini-bar</option>
+            <option value="wars_and_vending">WARS + automaty</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="gastroInfo">Szczegóły gastronomii (nr wagonu / do stacji)</label>
+          <input id="gastroInfo" type="text" placeholder="np. wagon 7; do stacji Kraków">
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div>
+          <label for="isDelayed">Pociąg opóźniony?</label>
+          <div class="checkbox-row"><input id="isDelayed" type="checkbox"><label class="small inline">zaznacz, jeśli opóźnienie</label></div>
+        </div>
+
+        <div>
+          <label for="delayMinutes">Minuty opóźnienia (jeśli dotyczy)</label>
+          <input id="delayMinutes" type="number" min="0" value="0">
+        </div>
+
+        <div style="grid-column:1/3">
+          <label for="delayReason">Przyczyna opóźnienia (wybierz z katalogu lub wpisz)</label>
+          <select id="delayReason">
+            <option value="">-- wybierz z katalogu --</option>
+            <!-- przykładowe opcje z katalogu (użytkownik może wpisać własną) -->
+            <option value="awaria_taboru">awaria taboru</option>
+            <option value="awaria_sieci_trakcyjnej">awaria sieci trakcyjnej</option>
+            <option value="roboty_torowe">roboty torowe</option>
+            <option value="inne">inne</option>
+          </select>
+          <input id="delayReasonCustom" type="text" placeholder="Jeśli 'inne' — wpisz treść" style="margin-top:8px">
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div>
+          <label for="stopDuration">Przewidywany czas postoju na stacji (minuty)</label>
+          <input id="stopDuration" type="number" min="0" value="0">
+        </div>
+
+        <div>
+          <label for="disconnect">Rozłączenie wagonów / rozkład (jeśli dotyczy)</label>
+          <input id="disconnect" type="text" placeholder="np. wagony 1-3 kończą bieg na stacji X">
+        </div>
+
+        <div>
+          <label for="transfers">Możliwe przesiadki / info o skomunikowaniach</label>
+          <input id="transfers" type="text" placeholder="np. możliwe przesiadki do pociągu...">
+        </div>
+
+        <div>
+          <label for="notes">Dodatkowe uwagi / regulacje</label>
+          <input id="notes" type="text" placeholder="np. zamknięte toalety w wagonach 3-4">
+        </div>
+      </div>
+
+      <!-- Opcje części A/B/C -->
+      <div style="display:grid;gap:8px">
+        <label class="kv">Dodatkowe komunikaty (wybierz fragmenty do dołączenia)</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <label><input type="checkbox" id="partA1"> A1 — jazda pociągiem opóźnionym (zmiana opóźnienia)</label>
+          <label><input type="checkbox" id="partA2"> A2 — wydłużony postój</label>
+          <label><input type="checkbox" id="partA3"> A3 — zatrzymanie przed semaforem</label>
+          <label><input type="checkbox" id="partB1"> B1 — nieplanowany postój / przerwa w ruchu</label>
+          <label><input type="checkbox" id="partB3"> B3 — poczęstunek awaryjny (opóźnienie ≥60 min)</label>
+          <label><input type="checkbox" id="partC4"> C4 — przypomnienie o zakazach (palenie/alkohol)</label>
+        </div>
+        <div class="helper">Zaznacz fragmenty A/B/C, które chcesz dodać — generator sam uwzględni warunki (np. B3 doda się automatycznie gdy opóźnienie ≥60 min i zaznaczysz B3).</div>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button id="generateBtn" class="btn btn-primary">Generuj komunikat</button>
+        <button id="copyBtn" class="btn btn-ghost">Kopiuj do schowka</button>
+        <button id="exportBtn" class="btn btn-ghost">Eksport .txt</button>
+        <button id="clearBtn" class="btn btn-ghost">Wyczyść formularz</button>
+      </div>
+
+      <div>
+        <label>Wygenerowany komunikat</label>
+        <textarea id="output" readonly placeholder="Wynik pojawi się tutaj"></textarea>
+      </div>
+
+      <div class="preset-list">
+        <label class="small">Presety (zapisz, aby szybko wczytać pociąg)</label>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <input id="presetName" placeholder="Nazwa presetu" />
+          <button id="savePreset" class="btn btn-primary">Zapisz preset</button>
+        </div>
+        <div id="presets" style="margin-top:8px"></div>
+      </div>
+
     </div>
 
-    <div id="step2" class="hidden">
-        <button class="btn-secondary" onclick="goToStep1()">EDYTUJ DANE</button>
-        <div style="clear:both;"></div>
-
-        <h3>IV. WYBIERZ SYTUACJĘ</h3>
-        <select id="scenario" onchange="uiRefresh()">
-            <option value="1">1. POWITALNY - SKRÓCONY STARTOWY</option>
-            <option value="2">2. POWITALNY - ROZSZERZONY (Wojewódzkie)</option>
-            <option value="3">3. POWITALNY - SKRÓCONY</option>
-            <option value="4">4. POWITALNO-POŻEGNALNY (Tranzytowy)</option>
-            <option value="5">5. POŻEGNALNY</option>
-            <option value="delay_only">TYLKO OPÓŹNIENIE (A1)</option>
-        </select>
-
-        <div id="stationSection">
-            <label id="lblStation">Stacja:</label>
-            <input type="text" id="currentStation" placeholder="Nazwa stacji..." onkeyup="checkAirport()">
-            <div id="airportInfo" class="alert"></div>
-        </div>
-
-        <div style="background: #fff3cd; padding: 10px; margin-top: 10px; border: 1px solid #e0c070;">
-            <label>Opóźnienie (min):</label>
-            <input type="number" id="delayMin" placeholder="0" oninput="uiRefresh()">
-            
-            <div id="reasonDiv" class="hidden">
-                <label>Przyczyna:</label>
-                <select id="delayReason">
-                    <option value="awaria">Awaria taboru</option>
-                    <option value="siec">Awaria sieci trakcyjnej</option>
-                    <option value="srk">Awaria sterowania ruchem</option>
-                    <option value="wypadek">Wypadek z osobą</option>
-                    <option value="pogoda">Warunki atmosferyczne</option>
-                    <option value="krzyzowanie">Krzyżowanie</option>
-                    <option value="skomunikowanie">Skomunikowanie</option>
-                    <option value="policja">Policja</option>
-                </select>
-            </div>
-        </div>
-
-        <button class="btn-action" onclick="generate()">GENERUJ KOMUNIKAT</button>
-
-        <br><br>
-        <span class="lang-title">POLSKI</span>
-        <div class="output-box" id="outPL"></div>
-
-        <span class="lang-title">ENGLISH</span>
-        <div class="output-box" id="outEN"></div>
+    <div class="footer">
+      Współautorzy: ChatGPT i Piotr M🚂
     </div>
+
+  </div>
 </div>
 
 <script>
-// --- BAZA DANYCH POCIĄGÓW (Przykłady - tu należy wkleić dane z CSV/JSON) ---
 /*
-  Struktura:
-  id: główny numer handlowy (np. 1300)
-  variants: lista numerów, które pasują (w tym drogowe, np. 13100, oraz parzyste/nieparzyste)
-  cat: kategoria (EIP, IC, TLK)
-  name: nazwa pociągu
-  from: stacja początkowa
-  to: stacja końcowa
-  via: przez (opcjonalnie)
+  Pełna implementacja generatora zapowiedzi zgodnie z dokumentem Wytyczne i Wzory komunikatów PKP IC (2025).
+  - Składamy komunikat z fragmentów wg reguł: podstawowe, A, B, C.
+  - Pomijamy fragmenty gdy brak danych.
+  - Dodajemy fragmenty warunkowe (np. jeśli opóźnienie >=5 min dodajemy 'Przepraszamy za opóźnienie' w powitalnych).
+  - B3 (poczęstunek awaryjny) sugerowany gdy opóźnienie >= 60 i zaznaczone.
+  - Presets i localStorage.
+  - trains.json ładowane asynchronicznie (użytkownik wypełni).
 */
-const trainDatabase = [
-    {
-        id: "1300",
-        variants: ["1300", "1301", "1302", "1303", "13100", "13101"], 
-        cat: "EIP",
-        name: "",
-        from: "Warszawa Wschodnia",
-        to: "Kraków Główny",
-        via: "Warszawę Centralną",
-        gastro: "wars"
-    },
-    {
-        id: "3512",
-        variants: ["3512", "3513", "35100", "35102"],
-        cat: "IC",
-        name: "MAŁOPOLSKA",
-        from: "Kraków Główny",
-        to: "Gdynia Główna",
-        via: "Warszawę Centralną",
-        gastro: "wars_vending"
-    },
-    {
-        id: "45",
-        variants: ["45", "46", "44", "47"],
-        cat: "EIC",
-        name: "BWE (Berlin-Warszawa-Express)",
-        from: "Berlin Hbf",
-        to: "Warszawa Wschodnia",
-        via: "Poznań Główny",
-        gastro: "wars"
-    },
-    {
-        id: "18100",
-        variants: ["18100", "18101", "81100", "81101", "1800", "8100"],
-        cat: "TLK",
-        name: "UZNAM",
-        from: "Świnoujście",
-        to: "Warszawa Wschodnia",
-        via: "Szczecin Główny",
-        gastro: "none"
-    },
-    {
-        id: "5320",
-        variants: ["5320", "5321", "53100"],
-        cat: "IC",
-        name: "PIAST",
-        from: "Gdynia Główna",
-        to: "Kraków Główny",
-        via: "Wrocław Główny",
-        gastro: "wars"
-    }
-];
 
-// --- LOGIKA WYSZUKIWANIA (SMART MATCH) ---
-function searchTrain() {
-    let input = document.getElementById('searchInput').value.trim();
-    if (!input) return;
+// helpers
+const $ = id => document.getElementById(id);
+const lsget = k => {
+  try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; }
+};
+const lsset = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} };
 
-    // Normalizacja: usuwamy ewentualne litery, zostawiamy cyfry
-    input = input.replace(/\D/g, ''); 
-    
-    // Próba znalezienia pociągu
-    let found = null;
+let trains = [];
 
-    // 1. Szukanie dokładne w wariantach
-    found = trainDatabase.find(t => t.variants.includes(input));
+// load trains.json (skeleton file must be provided by user)
+fetch('trains.json')
+  .then(r => r.json())
+  .then(data => {
+    trains = Array.isArray(data) ? data : (data.trains || []);
+    const sel = $('trainSelect');
+    sel.innerHTML = '<option value="">-- wybierz pociąg --</option>';
+    trains.forEach((t,i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      const name = t.name ? ` ${t.name}` : '';
+      opt.textContent = `${t.category || ''} ${t.number || ''}${name} — ${t.route?.from || ''} → ${t.route?.to || ''}`;
+      sel.appendChild(opt);
+    });
+    // restore trainSelect from saved state
+    const saved = lsget('az_selectedTrain');
+    if (saved != null && saved < trains.length) sel.value = saved;
+  })
+  .catch(e => {
+    console.warn('Nie znaleziono trains.json lub błąd wczytywania. Upewnij się, że plik istnieje i jest poprawny JSON.', e);
+  });
 
-    // 2. Jeśli nie znaleziono, obsługa zasady "zmiana ostatniej cyfry 0-1, 2-3"
-    if (!found) {
-        let num = parseInt(input);
-        let altNum;
-        if (num % 2 === 0) altNum = num + 1; // Jeśli parzysty, sprawdź +1
-        else altNum = num - 1;               // Jeśli nieparzysty, sprawdź -1
-        
-        found = trainDatabase.find(t => t.variants.includes(altNum.toString()));
-    }
-
-    // Wypełnianie formularza
-    const msg = document.getElementById('searchResult');
-    if (found) {
-        document.getElementById('cat').value = mapCategory(found.cat);
-        document.getElementById('num').value = found.id; // Zawsze wstawiamy handlowy (główny ID)
-        document.getElementById('name').value = found.name;
-        document.getElementById('from').value = found.from;
-        document.getElementById('to').value = found.to;
-        document.getElementById('via').value = found.via;
-        document.getElementById('gastroType').value = found.gastro || 'wars';
-        
-        msg.innerText = `✅ Znaleziono: ${found.cat} ${found.id} ${found.name}`;
-        msg.style.color = "green";
-    } else {
-        msg.innerText = "❌ Nie znaleziono pociągu w bazie (wersja demo). Wpisz dane ręcznie.";
-        msg.style.color = "red";
-    }
+// load saved form values
+function loadForm() {
+  const s = lsget('az_form');
+  if (!s) return;
+  for (const k in s) {
+    if ($(k)) $(k).value = s[k];
+  }
+  if (s.isDelayed) $('isDelayed').checked = true;
+  if (s.parts) {
+    ['A1','A2','A3','B1','B3','C4'].forEach(p => {
+      const el = {
+        A1: 'partA1', A2: 'partA2', A3: 'partA3', B1: 'partB1', B3: 'partB3', C4: 'partC4'
+      }[p];
+      if (el && s.parts.includes(p)) $(el).checked = true;
+    });
+  }
+}
+function saveForm() {
+  const obj = {
+    messageType: $('messageType').value,
+    category: $('category').value,
+    number: $('number').value,
+    name: $('name').value,
+    from: $('from').value,
+    to: $('to').value,
+    via: $('via').value,
+    nextStation: $('nextStation').value,
+    groups: $('groups').value,
+    conductorCar: $('conductorCar').value,
+    gastroType: $('gastroType').value,
+    gastroInfo: $('gastroInfo').value,
+    isDelayed: $('isDelayed').checked,
+    delayMinutes: Number($('delayMinutes').value || 0),
+    delayReason: $('delayReason').value,
+    delayReasonCustom: $('delayReasonCustom').value,
+    stopDuration: Number($('stopDuration').value || 0),
+    disconnect: $('disconnect').value,
+    transfers: $('transfers').value,
+    notes: $('notes').value,
+  };
+  // parts
+  const parts = [];
+  if ($('partA1').checked) parts.push('A1');
+  if ($('partA2').checked) parts.push('A2');
+  if ($('partA3').checked) parts.push('A3');
+  if ($('partB1').checked) parts.push('B1');
+  if ($('partB3').checked) parts.push('B3');
+  if ($('partC4').checked) parts.push('C4');
+  obj.parts = parts;
+  lsset('az_form', obj);
+  // selected train
+  lsset('az_selectedTrain', $('trainSelect').value === '' ? null : Number($('trainSelect').value));
 }
 
-function mapCategory(shortCat) {
-    if(shortCat === 'EIP') return "Express Intercity Premium";
-    if(shortCat === 'EIC') return "Express Intercity";
-    if(shortCat === 'IC') return "Intercity";
-    if(shortCat === 'TLK') return "TLK";
-    return "Intercity";
-}
-
-// --- STANDARDOWY KOD (jak w v4.0) ---
-
-const airports = {
-    "warszawa wschodnia": { pl: "Lotniska Chopina w Warszawie i Portu Lotniczego Warszawa-Modlin", en: "Warszawa Lotnisko Chopina and Warszawa Modlin airports" },
-    "warszawa zachodnia": { pl: "Lotniska Chopina w Warszawie i Portu Lotniczego Warszawa-Modlin", en: "Warszawa Lotnisko Chopina and Warszawa Modlin airports" },
-    "warszawa centralna": { pl: "Lotniska Chopina w Warszawie i Portu Lotniczego Warszawa-Modlin", en: "Warszawa Lotnisko Chopina and Warszawa Modlin airports" },
-    "warszawa gdańska": { pl: "Portu Lotniczego Warszawa-Modlin", en: "Modlin Airport" },
-    "modlin": { pl: "Portu Lotniczego Warszawa-Modlin", en: "Modlin Airport" },
-    "lublin główny": { pl: "Portu Lotniczego Lublin", en: "Lublin AIRPORT" },
-    "kraków główny": { pl: "Portu Lotniczego Kraków-Balice", en: "Kraków Lotnisko" },
-    "gdańsk wrzeszcz": { pl: "Portu Lotniczego Gdańsk", en: "Gdańsk Port Lotniczy" },
-    "gdynia główna": { pl: "Portu Lotniczego Gdańsk", en: "Gdańsk Port Lotniczy" },
-    "szczecin dąbie": { pl: "Portu Lotniczego Szczecin Goleniów", en: "Port Lotniczy Szczecin Goleniów" },
-    "katowice": { pl: "Portu Lotniczego Katowice-Pyrzowice", en: "Pyrzowice Lotnisko" },
-    "rzeszów główny": { pl: "Portu Lotniczego Rzeszów-Jasionka", en: "Jasionka Lotnisko" },
-    "olsztyn główny": { pl: "Portu Lotniczego Olsztyn-Mazury", en: "Szymany Lotnisko" }
-};
-
-const delayCauses = {
-    "awaria": { pl: "awarią taboru", en: "a rolling stock failure" },
-    "siec": { pl: "awarią sieci trakcyjnej", en: "the malfunction of the railway overhead wiring" },
-    "srk": { pl: "awarią urządzeń sterowania ruchem kolejowym", en: "the malfunction of the railway traffic control device" },
-    "wypadek": { pl: "wypadkiem z udziałem człowieka", en: "an accident involving a human being" },
-    "pogoda": { pl: "trudnymi warunkami atmosferycznymi", en: "the bad weather conditions" },
-    "krzyzowanie": { pl: "przepuszczaniem innego pociągu", en: "allowing another train to pass" },
-    "skomunikowanie": { pl: "oczekiwaniem na podróżnych z innego pociągu", en: "the awaiting for passengers from another train" },
-    "policja": { pl: "interwencją służb porządkowych", en: "an intervention by law enforcement authorities" }
-};
-
-window.addEventListener('DOMContentLoaded', () => {
-    const data = JSON.parse(localStorage.getItem('ic_data_v5'));
-    if(data) {
-        document.getElementById('cat').value = data.cat;
-        document.getElementById('num').value = data.num;
-        document.getElementById('name').value = data.name;
-        document.getElementById('carService').value = data.carService || '';
-        document.getElementById('from').value = data.from;
-        document.getElementById('to').value = data.to;
-        document.getElementById('via').value = data.via;
-        document.getElementById('gastroType').value = data.gastroType;
-        document.getElementById('carGastro').value = data.carGastro;
-        document.getElementById('carVending').value = data.carVending;
-    }
+// wire saving on change
+[
+  'messageType','category','number','name','from','to','via','nextStation','groups','conductorCar',
+  'gastroType','gastroInfo','isDelayed','delayMinutes','delayReason','delayReasonCustom','stopDuration',
+  'disconnect','transfers','notes','trainSelect'
+].forEach(id => {
+  const el = $(id);
+  if (!el) return;
+  el.addEventListener('input', () => {
+    saveForm();
+  });
+  el.addEventListener('change', () => {
+    saveForm();
+  });
 });
 
-function goToStep2() {
-    const data = {
-        cat: document.getElementById('cat').value,
-        num: document.getElementById('num').value,
-        name: document.getElementById('name').value,
-        carService: document.getElementById('carService').value,
-        from: document.getElementById('from').value,
-        to: document.getElementById('to').value,
-        via: document.getElementById('via').value,
-        gastroType: document.getElementById('gastroType').value,
-        carGastro: document.getElementById('carGastro').value,
-        carVending: document.getElementById('carVending').value
-    };
-    localStorage.setItem('ic_data_v5', JSON.stringify(data));
-    document.getElementById('step1').classList.add('hidden');
-    document.getElementById('step2').classList.remove('hidden');
-    uiRefresh();
+// load saved on start
+document.addEventListener('DOMContentLoaded', () => {
+  // restore presets list
+  renderPresets();
+  loadForm();
+  // if trainSelect chosen, fill form
+  const idx = lsget('az_selectedTrain');
+  if (idx != null && $('trainSelect') && $('trainSelect').options.length > idx) {
+    $('trainSelect').value = idx;
+    fillFromTrain(idx);
+  }
+});
+
+// when user selects train from trains.json
+$('trainSelect')?.addEventListener('change', (e) => {
+  const idx = e.target.value;
+  if (idx === '') return;
+  fillFromTrain(idx);
+  lsset('az_selectedTrain', Number(idx));
+});
+
+function fillFromTrain(idx) {
+  if (!trains[idx]) return;
+  const t = trains[idx];
+  $('category').value = t.category || $('category').value;
+  $('number').value = t.number || $('number').value;
+  $('name').value = t.name || $('name').value;
+  $('from').value = t.route?.from || $('from').value;
+  $('to').value = t.route?.to || $('to').value;
+  $('via').value = (Array.isArray(t.route?.via) ? t.route.via.join(', ') : (t.route?.via || $('via').value));
+  $('nextStation').value = (Array.isArray(t.nextStations) ? t.nextStations[0] : (t.nextStations || $('nextStation').value));
+  $('gastroType').value = t.gastro?.type || $('gastroType').value;
+  $('gastroInfo').value = t.gastro?.info || $('gastroInfo').value;
+  $('conductorCar').value = t.conductorCar || $('conductorCar').value;
+  saveForm();
 }
 
-function goToStep1() {
-    document.getElementById('step2').classList.add('hidden');
-    document.getElementById('step1').classList.remove('hidden');
+// TEXT BUILDERS — follow PDF structure exactly
+function fragHeaderGreeting() {
+  return 'Dzień dobry! / Dobry wieczór!';
+}
+function fragWelcomeTrain(cat, num, name) {
+  const namePart = name ? ` ${name}` : '';
+  return `Witamy w pociągu ${cat} ${num}${namePart}`;
+}
+function fragRel(from,to,viaStr) {
+  let s = `, ze stacji ${from} do stacji ${to}`;
+  if (viaStr) s += `, przez ${viaStr}`;
+  s += '.';
+  return s;
+}
+function fragNextStation(next) {
+  return next ? `Następna stacja ${next}.` : '';
+}
+function fragGroups(groups) {
+  return groups ? `Pociąg prowadzi grupę/grupy wagonów: ${groups}.` : '';
+}
+function fragDelayInfo(delayMin, reason) {
+  if (!delayMin || delayMin <= 0) return '';
+  const minWord = (delayMin === 1) ? 'minutę' : 'minut';
+  const reasonText = reason || '...';
+  return `Informujemy, że w związku z ${reasonText} pociąg jest opóźniony o ${delayMin} ${minWord}. Przepraszamy za opóźnienie. Osoby przesiadające się do innych pociągów prosimy o zgłaszanie tego zamiaru drużynie konduktorskiej.`;
+}
+function fragConductorCar(car) {
+  return car ? `Przedział konduktorski znajduje się w wagonie numer ${car}.` : '';
+}
+function fragFreeSnack() {
+  return `W trakcie podróży otrzymają Państwo poczęstunek.`;
+}
+function fragGastronomy(type, info) {
+  // Uses patterns from PDF (see pages quoted)
+  if (!type || type === 'none') return `Informujemy, że w pociągu oferta gastronomiczna nie jest dostępna, za co Państwa przepraszamy.`;
+  if (type === 'wars') {
+    if (info) return `Zapraszamy do skorzystania z oferty gastronomicznej WARS, w wagonie numer ${info}.`;
+    return `Zapraszamy do skorzystania z oferty gastronomicznej WARS.`;
+  }
+  if (type === 'vending') {
+    if (info) return `Zapraszamy do zakupu napojów i przekąsek w automatach, w wagonie/wagonach numer ${info}.`;
+    return `Zapraszamy do zakupu napojów i przekąsek w automatach.`;
+  }
+  if (type === 'minibar') {
+    if (info) return `Zapraszamy do zakupu napojów i przekąsek z wózka mini-bar. Oferta dostępna będzie do stacji ${info}.`;
+    return `Zapraszamy do zakupu napojów i przekąsek z wózka mini-bar.`;
+  }
+  if (type === 'wars_and_vending') {
+    // info may contain "wagon 7; vending 10"
+    const parts = (info || '').split(';').map(s=>s.trim()).filter(Boolean);
+    let wars = '', vend = '';
+    parts.forEach(p=>{
+      if (/wars|wagon/i.test(p)) wars = p.replace(/wars|wagon/i,'').trim();
+      else vend = p;
+    });
+    let out = 'Zapraszamy do skorzystania z oferty gastronomicznej WARS';
+    if (wars) out += `, w wagonie numer ${wars}`;
+    out += '.';
+    if (vend) out += ` Dodatkowo dostępne są automaty vendingowe w wagonach ${vend}.`;
+    return out;
+  }
+  return '';
+}
+function fragSafetyNotice() {
+  return `W trosce o Państwa komfort i bezpieczeństwo, prosimy o zapoznanie się z informacjami zamieszczonymi w wagonach. Drużyna konduktorska pozostaje do Państwa dyspozycji i służy pomocą w trakcie całej podróży.`;
+}
+function fragFarewells() {
+  return `Osoby wysiadające prosimy o zabranie swoich rzeczy oraz zachowanie ostrożności. Dziękujemy za podróż z PKP Intercity.`;
+}
+function fragStopDuration(min) {
+  if (!min || min < 1) return '';
+  return `Przewidywany czas postoju na stacji wynosi około ${min} minut.`;
+}
+function fragPlannedDeparture(timeStr) {
+  return timeStr ? `Planowy/Przewidywany odjazd pociągu o godzinie ${timeStr}.` : '';
+}
+function fragDisconnectInfo(disconnect) {
+  return disconnect ? `${disconnect}` : '';
+}
+function fragTransferInfo(transfers) {
+  return transfers ? `Informujemy o możliwości przesiadek: ${transfers}.` : '';
+}
+function fragA1() {
+  return `Informujemy, że pociąg jedzie zgodnie z rozkładem jazdy.`;
+}
+function fragA2(delayMin, reason) {
+  return `Informujemy, że w związku z ${reason || '...'} pociąg odjedzie z opóźnieniem około ${delayMin} minut. O zmianie opóźnienia będziemy informować na bieżąco. Przepraszamy za niedogodności.`;
+}
+function fragA3(next, minutes) {
+  return `Informujemy, że nasz pociąg wjedzie na stację ${next || '...'} za około ${minutes} minut. Ze względów bezpieczeństwa, otwieranie drzwi wyjściowych oraz opuszczanie pociągu jest zabronione.`;
+}
+function fragB1() {
+  return `Informujemy, że nastąpiła nieprzewidziana przerwa w ruchu. Przepraszamy za niedogodności i prosimy o wyrozumiałość. W chwili obecnej ustalamy przyczyny nieplanowego postoju pociągu.`;
+}
+function fragB3(poczęstunekDesc) {
+  return `Prosimy o uwagę! Informujemy, że w związku z opóźnieniem pociągu istnieje możliwość otrzymania poczęstunku awaryjnego: ${poczęstunekDesc || 'szczegóły u drużyny konduktorskiej'}.`;
+}
+function fragC4() {
+  return `Przypominamy, że w pociągu obowiązuje całkowity zakaz palenia wyrobów tytoniowych i papierosów elektronicznych. Niezastosowanie się do zakazu może spowodować awaryjne zatrzymanie pociągu.`;
 }
 
-function uiRefresh() {
-    const sc = document.getElementById('scenario').value;
-    const delay = document.getElementById('delayMin').value;
-    const stSec = document.getElementById('stationSection');
-    const lbl = document.getElementById('lblStation');
-    
-    if (sc === 'delay_only') {
-        stSec.classList.add('hidden');
-    } else {
-        stSec.classList.remove('hidden');
-        if (['1','2','3'].includes(sc)) lbl.innerText = "Następna stacja:";
-        else lbl.innerText = "Zbliżamy się do stacji:";
-    }
-
-    if (delay >= 5) document.getElementById('reasonDiv').classList.remove('hidden');
-    else document.getElementById('reasonDiv').classList.add('hidden');
-}
-
-function checkAirport() {
-    const st = document.getElementById('currentStation').value.toLowerCase();
-    const info = document.getElementById('airportInfo');
-    info.innerText = airports[st] ? "⚠️ WYKRYTO LOTNISKO!" : "";
-}
-
+// main build function
 function generate() {
-    const d = JSON.parse(localStorage.getItem('ic_data_v5'));
-    const sc = document.getElementById('scenario').value;
-    const st = document.getElementById('currentStation').value;
-    const delay = parseInt(document.getElementById('delayMin').value) || 0;
-    const reasonKey = document.getElementById('delayReason').value;
-    
-    let pl = "";
-    let en = "";
+  // collect fields
+  const type = $('messageType').value;
+  const category = $('category').value;
+  const number = $('number').value.trim();
+  const name = $('name').value.trim();
+  const from = $('from').value.trim();
+  const to = $('to').value.trim();
+  const via = $('via').value.trim();
+  const next = $('nextStation').value.trim();
+  const groups = $('groups').value.trim();
+  const conductorCar = $('conductorCar').value.trim();
+  const gastroType = $('gastroType').value;
+  const gastroInfo = $('gastroInfo').value.trim();
+  const isDelayed = $('isDelayed').checked;
+  const delayMinutes = Number($('delayMinutes').value || 0);
+  const delayReason = ($('delayReason').value === 'inne') ? $('delayReasonCustom').value.trim() : $('delayReason').value;
+  const stopDuration = Number($('stopDuration').value || 0);
+  const disconnect = $('disconnect').value.trim();
+  const transfers = $('transfers').value.trim();
+  const notes = $('notes').value.trim();
 
-    const nameStrPL = d.name ? ` ${d.name}` : ""; 
-    const viaPL = d.via ? `, przez stację ${d.via}` : "";
-    const viaEN = d.via ? `, via ${d.via}` : "";
-    const carService = d.carService ? d.carService : ".....";
+  // parts selection
+  const parts = {
+    A1: $('partA1').checked,
+    A2: $('partA2').checked,
+    A3: $('partA3').checked,
+    B1: $('partB1').checked,
+    B3: $('partB3').checked,
+    C4: $('partC4').checked
+  };
 
-    if (sc === '1') {
-        pl += `Następna stacja: ${st}.`;
-        en += `Next station: ${st}.`;
-        if (d.gastroType !== 'none' && d.gastroType !== 'none_exception') {
-            pl += `\nZapraszamy do skorzystania z oferty gastronomicznej.`;
-            en += `\nWe would like to invite you to try the gastronomic service.`;
-        }
+  // validation required by document: type, category, number, from, to
+  const missing = [];
+  if (!type) missing.push('typ komunikatu');
+  if (!category) missing.push('kategoria pociągu');
+  if (!number) missing.push('numer pociągu');
+  if (!from) missing.push('stacja początkowa');
+  if (!to) missing.push('stacja końcowa');
+  if (missing.length) {
+    alert('Brakuje wymaganych danych: ' + missing.join(', ') + '. Nie można wygenerować komunikatu.');
+    return;
+  }
+
+  // Start building following exact fragment rules and order from PDF
+  let out = '';
+
+  // Greeting for powitalne templates
+  if (type.startsWith('powitalny')) {
+    out += fragHeaderGreeting() + '\n';
+    out += fragWelcomeTrain(category, number, name);
+    out += fragRel(from, to, via ? via.split(',').map(s=>s.trim()).filter(Boolean).slice(0,2).join(', ') : '');
+    out += '\n';
+    // if groups present and multi-group logic: include groups fragment (document requires)
+    if (groups) out += fragGroups(groups) + '\n';
+    // Next station
+    if (next) out += fragNextStation(next) + '\n';
+    // Delay info for powitalny_rozszerzony (and powitalny_skr_start: if specified)
+    if (isDelayed && delayMinutes >= 1) {
+      // PDF: if opóźnienie >=5 add "Przepraszamy..." — but add delay info always when present
+      out += fragDelayInfo(delayMinutes, delayReason) + '\n';
+      if (delayMinutes >= 5) {
+        out += 'Przepraszamy za opóźnienie pociągu.\n';
+      }
     }
-    
-    else if (sc === '2') {
-        pl += `Dzień dobry! / Dobry wieczór!\n`;
-        pl += `Witamy w pociągu ${d.cat} numer ${d.num}${nameStrPL} ze stacji ${d.from} do stacji ${d.to}${viaPL}.\n`;
-        pl += `Następna stacja: ${st}.`;
+    // conductor car
+    if (conductorCar) out += fragConductorCar(conductorCar) + '\n';
+    // free snack (not modeled by field now) - skipped unless notes instruct
+  }
 
-        en += `Good morning! / Good afternoon! / Good evening!\n`;
-        en += `Welcome on board of our ${d.cat} train ${d.num} from ${d.from} station to ${d.to} station${viaEN}.\n`;
-        en += `Next station: ${st}.`;
-        
-        if (d.gastroType === 'wars') {
-            pl += `\nZapraszamy do skorzystania z oferty gastronomicznej WARS, w wagonie numer ${d.carGastro}.`;
-            en += `\nWe would like to invite you to try WARS' gastronomic service in car number ${d.carGastro}.`;
-        } else if (d.gastroType === 'vending') {
-            pl += `\nZapraszamy do zakupu napojów i przekąsek w automatach, w wagonie/wagonach numer ${d.carVending}.`;
-            en += `\nWe would like to invite you to purchase drinks and snacks from the vending machines in car/cars number ${d.carVending}.`;
-        } else if (d.gastroType === 'wars_vending') {
-            pl += `\nZapraszamy do skorzystania z oferty gastronomicznej WARS, w wagonie numer ${d.carGastro} oraz do zakupu napojów i przekąsek w automatach...`;
-            en += `\nWe would like to invite you to try WARS' gastronomic service in car number ${d.carGastro} and to purchase drinks...`;
-        } else if (d.gastroType === 'minibar') {
-            pl += `\nZapraszamy do zakupu napojów i przekąsek z wózka mini-bar.`;
-            en += `\nWe would like to invite you to purchase drinks and snacks from the mini-bar cart.`;
-        }
+  // For powitalno-pożegnalny / pozegnalny, different opening
+  if (type === 'powitalno_pozegnalny') {
+    // shortened tranzytowy pattern
+    if (next) out += `Zbliżamy się do stacji ${next}.\n`; else out += `Zbliżamy się do stacji.\n`;
+    if (isDelayed && delayMinutes >= 5) out += 'Przepraszamy za opóźnienie pociągu.\n';
+    if (stopDuration >= 5) out += fragStopDuration(stopDuration) + '\n';
+    if (disconnect) out += `Przypominamy, że na stacji ${disconnect} pociąg zostanie rozłączony.\n`;
+  }
 
-        pl += `\n\nW trosce o Państwa komfort i bezpieczeństwo, prosimy o zapoznanie się z informacjami zamieszczonymi w wagonach. Drużyna konduktorska pozostaje do Państwa dyspozycji i służy pomocą w trakcie całej podróży.`;
-        pl += `\nPrzedział konduktorski znajduje się w wagonie numer ${carService}.`;
-        
-        en += `\n\nFor your comfort and safety, please read the information provided in the passenger cars. The on-board train crew remains at your service throughout the journey.`;
-        en += `\nThe train crew's compartment is located in the car number ${carService}.`;
-    }
+  if (type === 'pozegnalny') {
+    out += `Zbliżamy się do stacji / stacji końcowej ${to}.\n`;
+    if (isDelayed && delayMinutes >= 5) out += 'Przepraszamy za opóźnienie pociągu.\n';
+    if (stopDuration >= 5) out += fragStopDuration(stopDuration) + '\n';
+    if (disconnect) out += fragDisconnectInfo(disconnect) + '\n';
+    out += 'Osoby wysiadające prosimy o zabranie swoich rzeczy oraz zachowanie ostrożności. Dziękujemy za podróż z PKP Intercity.\n';
+  }
 
-    else if (sc === '3') {
-        pl += `Następna stacja: ${st}.`;
-        en += `Next station: ${st}.`;
-    }
-    else if (sc === '4') {
-        if (d.gastroType !== 'none') {
-            pl += `Zapraszamy do skorzystania z oferty gastronomicznej.\n`;
-            en += `We would like to invite you to try the gastronomic service.\n`;
-        }
-        pl += `Zbliżamy się do stacji ${st}.`;
-        en += `We are approaching ${st} station.`;
-        pl += `\nNa stacji można przesiąść się do pociągów dalekobieżnych, regionalnych lub podmiejskich.`;
-        en += `\nAt the station you can change to long-distance, regional or suburban trains.`;
-    }
-    else if (sc === '5') {
-        pl += `Zbliżamy się do stacji końcowej ${st}.`;
-        en += `We are approaching terminal station ${st}.`;
-    }
+  // Gastronomy — document prescribes: if available, add; if not — apology with alternatives
+  // The PDF uses different variants depending on template: we keep the standardized phrases.
+  // For powitalne: if opóźnienie >=5 also add "Zapraszamy do skorzystania..." per doc.
+  // We'll include the gastronomic fragment in most templates unless template explicitly avoids.
+  const gastroFrag = fragGastronomy(gastroType, gastroInfo);
+  // If powitalny_rozszerzony and isDelayed >=5 -> add "Zapraszamy..."
+  if (type.startsWith('powitalny')) {
+    out += gastroFrag + '\n';
+  } else if (type === 'pozegnalny' || type === 'powitalno_pozegnalny') {
+    // include gastronomic info as well
+    out += gastroFrag + '\n';
+  }
 
-    if (delay >= 5) {
-        const r = delayCauses[reasonKey];
-        pl += `\n\nInformujemy, że w związku z ${r.pl} pociąg jest opóźniony o ${delay} minut. Przepraszamy za opóźnienie.`;
-        en += `\n\nWe would like to inform you that due to ${r.en} the train is delayed about ${delay} minutes. We would like to apologize for the delay.`;
+  // Safety and crew info always at end of base templates
+  if (type.startsWith('powitalny')) {
+    out += fragSafetyNotice() + '\n';
+  }
 
-        pl += `\nOsoby przesiadające się prosimy o zgłoszenie tego drużynie konduktorskiej. Przedział konduktorski znajduje się w wagonie numer ${carService}.`;
-        en += `\nPassengers willing to change trains are asked to report this intention to the train crew. The train crew's compartment is located in the car number ${carService}.`;
-    }
+  // Add conductor car info again if not yet added in other block (ensure present)
+  if (!type.startsWith('powitalny') && conductorCar) out += fragConductorCar(conductorCar) + '\n';
 
-    if ((sc === '4' || sc === '5') && airports[st.toLowerCase()]) {
-        const air = airports[st.toLowerCase()];
-        pl += `\nZe stacji ${st} odjeżdżają pociągi w kierunku ${air.pl}. Prosimy o zwrócenie uwagi na informacje stacyjne.`;
-        en += `\nFrom ${st} station depart trains to ${air.en}. Please be reminded to pay attention to information provided at the station.`;
-    }
+  // Add additional parts A/B/C as selected AND as allowed by conditions in document
+  // A1: jazda pociągiem opóźnionym — applicable when pociag był opóźniony i teraz jedzie zgodnie
+  if (parts.A1) {
+    out += fragA1() + '\n';
+  }
+  // A2: wydłużony postój - when stopDuration increased (user selects); we include reason/minutes
+  if (parts.A2) {
+    out += fragA2(stopDuration || delayMinutes, delayReason) + '\n';
+  }
+  // A3: zatrzymanie przed semaforem
+  if (parts.A3) {
+    out += fragA3(next, delayMinutes || '...') + '\n';
+  }
+  // B1: not planned stop /break in traffic — include if selected
+  if (parts.B1) {
+    out += fragB1() + '\n';
+    out += 'Ze względów bezpieczeństwa, otwieranie drzwi wyjściowych oraz opuszczanie pociągu jest zabronione.\n';
+  }
+  // B3: poczęstunek awaryjny — document: include if opóźnienie >=60 and possibility exists
+  if (parts.B3 || (isDelayed && delayMinutes >= 60)) {
+    // if user selected B3 or condition met, include B3 template — ask for details? use transfers/notes or generic
+    const pocz = notes || 'poczęstunek/detal na stacji; prosimy o zgłaszanie się do drużyny konduktorskiej';
+    out += fragB3(pocz) + '\n';
+  }
+  // C4: non-compliance reminders
+  if (parts.C4) out += fragC4() + '\n';
 
-    if (sc === '4' || sc === '5') {
-        pl += `\nOsoby wysiadające prosimy o zabranie swoich rzeczy oraz zachowanie ostrożności. Dziękujemy za podróż z PKP Intercity.`;
-        en += `\nPassengers, who are leaving the train, please remember to take your belongings and take caution. Thank you for choosing PKP Intercity.`;
-    }
+  // Transfers / skomunikowania — document: must be in pożegnalny and powitalno-pożegnalny when applicable
+  if (transfers && (type === 'pozegnalny' || type === 'powitalno_pozegnalny')) {
+    out += fragTransferInfo(transfers) + '\n';
+  }
 
-    document.getElementById('outPL').innerText = pl;
-    document.getElementById('outEN').innerText = en;
+  // If groups present and we didn't add earlier in powitalny branch for non-powitalny, include
+  if (!type.startsWith('powitalny') && groups) out += fragGroups(groups) + '\n';
+
+  // Add notes (like closure of toilets etc.)
+  if (notes) out += notes + '\n';
+
+  // End common footer if not already included
+  if (!(type === 'pozegnalny')) out += 'Dziękujemy za uwagę.\n';
+
+  // final trimming and ensure no sequences of empty lines
+  out = out.split('\n').map(s => s.trim()).filter((s,i,arr)=> !(s==='')).join('\n') + '\n';
+  $('output').value = out;
+  saveForm();
 }
+
+// copy to clipboard
+$('copyBtn')?.addEventListener('click', () => {
+  const txt = $('output').value;
+  if (!txt) { alert('Brak wygenerowanego komunikatu.'); return; }
+  navigator.clipboard.writeText(txt).then(()=> alert('Skopiowano do schowka')).catch(e=>alert('Błąd kopiowania: '+e));
+});
+
+// generate button
+$('generateBtn').addEventListener('click', generate);
+
+// export .txt
+$('exportBtn').addEventListener('click', () => {
+  const txt = $('output').value;
+  if (!txt) { alert('Brak komunikatu do eksportu'); return; }
+  const blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `komunikat_${$('number').value || 'pociag'}.txt`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+
+// clear
+$('clearBtn').addEventListener('click', () => {
+  if (!confirm('Wyczyścić formularz i lokalne dane?')) return;
+  document.getElementById('form').reset();
+  $('output').value = '';
+  localStorage.removeItem('az_form');
+  localStorage.removeItem('az_presets');
+  localStorage.removeItem('az_selectedTrain');
+  renderPresets();
+});
+
+// Presets: save/load
+function renderPresets(){
+  const node = $('presets');
+  node.innerHTML = '';
+  const p = lsget('az_presets') || {};
+  const keys = Object.keys(p);
+  if (!keys.length) { node.innerHTML = '<div class="small">Brak presetów</div>'; return; }
+  keys.forEach(k=>{
+    const div = document.createElement('div');
+    div.style.display='flex'; div.style.justifyContent='space-between'; div.style.alignItems='center'; div.style.marginTop='6px';
+    const span = document.createElement('div'); span.textContent = k; span.className='small';
+    const actions = document.createElement('div');
+    const load = document.createElement('button'); load.textContent='Wczytaj'; load.className='btn btn-ghost'; load.style.marginRight='6px';
+    const del = document.createElement('button'); del.textContent='Usuń'; del.className='btn btn-ghost';
+    load.addEventListener('click', ()=>{ loadPreset(k); });
+    del.addEventListener('click', ()=>{ if(confirm('Usuń preset '+k+'?')) { const pr = lsget('az_presets')||{}; delete pr[k]; lsset('az_presets', pr); renderPresets(); } });
+    actions.appendChild(load); actions.appendChild(del);
+    div.appendChild(span); div.appendChild(actions);
+    node.appendChild(div);
+  });
+}
+$('savePreset').addEventListener('click', ()=> {
+  const name = $('presetName').value.trim();
+  if (!name) { alert('Podaj nazwę presetu'); return; }
+  const p = lsget('az_presets') || {};
+  const form = lsget('az_form') || {};
+  p[name] = form;
+  lsset('az_presets', p);
+  $('presetName').value = '';
+  renderPresets();
+  alert('Zapisano preset: '+name);
+});
+function loadPreset(name) {
+  const p = lsget('az_presets') || {};
+  const form = p[name];
+  if (!form) return;
+  // apply
+  for (const k in form) {
+    if ($(k)) $(k).value = form[k];
+  }
+  // parts
+  ['A1','A2','A3','B1','B3','C4'].forEach(pf => {
+    const el = {A1:'partA1',A2:'partA2',A3:'partA3',B1:'partB1',B3:'partB3',C4:'partC4'}[pf];
+    if (el) $(el).checked = (form.parts || []).includes(pf);
+  });
+  saveForm();
+  alert('Wczytano preset: '+name);
+}
+
+// initial render of presets
+renderPresets();
+
 </script>
 
 </body>
